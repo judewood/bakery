@@ -23,3 +23,8 @@ type Product struct {
 	Name     string
 	RecipeID string
 }
+
+type ProductQuantity struct {
+	ProductID string
+	Quantity  int
+}
