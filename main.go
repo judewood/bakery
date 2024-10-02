@@ -10,9 +10,9 @@ import (
 
 func main() {
 	productStore := store.NewProductStore()
-	productService := service.NewProductService(*productStore)
-	g := productService.GetAvailableProducts()
-	displayAvailableProducts(g)
+	productService := service.NewProductService(productStore)
+	availableProducts, _ := productService.GetAvailableProducts()
+	displayAvailableProducts(availableProducts)
 }
 
 func displayAvailableProducts(products []models.Product) {
