@@ -3,9 +3,9 @@ package store
 import "github.com/judewood/bakery/models"
 
 var products = []models.Product{
-	{Name: "Vanilla cake", RecipeID: "1"},
-	{Name: "plain cookie", RecipeID: "2"},
-	{Name: "Doughnut", RecipeID: "3"},
+	{Name: "Vanilla cakes", RecipeID: "1"},
+	{Name: "Plain cookies", RecipeID: "2"},
+	{Name: "Doughnuts", RecipeID: "3"},
 }
 
 type IProductStore interface {
