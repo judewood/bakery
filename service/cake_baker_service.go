@@ -32,5 +32,5 @@ func (cb *CakeBaker) Bake(rawProduct models.ProductQuantity) error {
 
 // Package - still to be implemented
 func (cb *CakeBaker) Package() {
-	fmt.Println("\n Order packaged")
+	fmt.Println("\n\nOrder packaged and ready to go")
 }
