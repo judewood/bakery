@@ -20,7 +20,7 @@ func main() {
 	bakerService := service.NewCakeBaker(recipeStore)
 
 	availableProducts, _ := productService.GetAvailableProducts()
-	fmt.Print(productService.FormatProducts(availableProducts))
+	fmt.Print(service.FormatProducts(availableProducts))
 
 	order := orders.NewOrder(random).RandomOrder(availableProducts)
 	fmt.Print(order.FormatOrder())
