@@ -10,13 +10,15 @@ type Ingredient struct {
 	Quantity int
 }
 
-type Bake struct {
-	Minutes int
+type Baker interface {
+	Bake(ch chan<- Product)
+	Package(ch <-chan Product)
 }
+
 type Recipe struct {
 	ID          string
 	Ingredients []Ingredient
-	Method      Bake
+	BakeTime    int
 }
 
 type Product struct {
@@ -26,5 +28,6 @@ type Product struct {
 
 type ProductQuantity struct {
 	ProductID string
+	RecipeID string
 	Quantity  int
 }

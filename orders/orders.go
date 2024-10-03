@@ -24,6 +24,7 @@ func (o *Order) RandomOrder(availableProducts []models.Product) *Order {
 	for _, product := range availableProducts {
 		productQuantity := models.ProductQuantity{
 			ProductID:  product.Name,
+			RecipeID: product.RecipeID,
 			Quantity: o.Random.GetRandom(5),
 		}
 		if productQuantity.Quantity > 0 {
