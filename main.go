@@ -4,8 +4,9 @@ import (
 	"fmt"
 
 	"github.com/judewood/bakery/models"
-	"github.com/judewood/bakery/orders"
-	"github.com/judewood/bakery/service"
+	"github.com/judewood/bakery/service/bakers"
+	"github.com/judewood/bakery/service/orders"
+	"github.com/judewood/bakery/service/products"
 	"github.com/judewood/bakery/store"
 	"github.com/judewood/bakery/utils"
 )
@@ -14,13 +15,13 @@ func main() {
 	productStore := new(store.ProductStore)
 	recipeStore := new(store.RecipeStore)
 
-	productService := service.NewProductService(productStore)
+	productService := products.NewProductService(productStore)
 	random := new(utils.Random)
 
-	bakerService := service.NewCakeBaker(recipeStore)
+	bakerService := bakers.NewCakeBaker(recipeStore)
 
 	availableProducts, _ := productService.GetAvailableProducts()
-	fmt.Print(service.FormatProducts(availableProducts))
+	fmt.Print(products.FormatProducts(availableProducts))
 
 	order := orders.NewOrder(random).RandomOrder(availableProducts)
 	fmt.Print(order.FormatOrder())
