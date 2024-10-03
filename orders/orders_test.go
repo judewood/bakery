@@ -8,13 +8,13 @@ import (
 	"github.com/judewood/bakery/models"
 )
 
-func TestRandomOrder(t *testing.T) {
+var availableProducts = []models.Product{
+	{Name: "Vanilla cake", RecipeID: "1"},
+	{Name: "plain cookie", RecipeID: "2"},
+	{Name: "Doughnut", RecipeID: "3"},
+}
 
-	availableProducts := []models.Product{
-		{Name: "Vanilla cake", RecipeID: "1"},
-		{Name: "plain cookie", RecipeID: "2"},
-		{Name: "Doughnut", RecipeID: "3"},
-	}
+func TestRandomOrder(t *testing.T) {
 
 	wantedItems := []models.ProductQuantity{
 		{ProductID: "Vanilla cake", RecipeID: "1", Quantity: 3},
@@ -30,4 +30,18 @@ func TestRandomOrder(t *testing.T) {
 	if !reflect.DeepEqual(wantedItems, order.Items) {
 		t.Errorf("Failed TestRandomOrder. \nWanted %v\nGot %v", wantedItems, order.Items)
 	}
+}
+
+func TestFormatOrder(t *testing.T) {
+	mockRandom := mocks.NewMockRandom()
+	mockRandom.On("GetRandom", 5).Return(3)
+
+	order := NewOrder(mockRandom).RandomOrder(availableProducts)
+	want := "\n3 of Vanilla cake\n3 of plain cookie\n3 of Doughnut"
+	got := order.FormatOrder()
+
+	if got != want {
+		t.Errorf("Failed TestFormatOrder. \nWanted:\n *%v*\nGot:\n *%v*", want, got)
+	}
+
 }

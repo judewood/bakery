@@ -9,17 +9,16 @@ import (
 	"github.com/judewood/bakery/models"
 )
 
-func TestGetAvailableProducts(t *testing.T) {
-
-	type testCase struct {
-		want []models.Product
-		err  error
-	}
-
-	sampleProducts := []models.Product{
+var sampleProducts = []models.Product{
 		{Name: "Vanilla cake", RecipeID: "1"},
 		{Name: "plain cookie", RecipeID: "2"},
 		{Name: "Doughnut", RecipeID: "3"},
+	}
+
+func TestGetAvailableProducts(t *testing.T) {
+	type testCase struct {
+		want []models.Product
+		err  error
 	}
 
 	mockError := errors.New("Mocked error")
@@ -49,5 +48,15 @@ func TestGetAvailableProducts(t *testing.T) {
 			t.Errorf("Failed TestGetAvailableProducts.\nExpected Error %v", testCase.err.Error())
 		}
 
+	}
+}
+
+func TestFormatProducts(t *testing.T) {
+	want := "We have available:\n Vanilla cake\n plain cookie\n Doughnut\n"
+
+	got := FormatProducts(sampleProducts)
+
+	if got != want {
+		t.Errorf("Failed TestFormatProducts. \nWanted:\n *%v*\nGot:\n *%v*", want, got)
 	}
 }

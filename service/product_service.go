@@ -28,11 +28,11 @@ func (p *ProductService) GetAvailableProducts() ([]models.Product, error) {
 
 }
 
-func (p *ProductService) FormatProducts(products []models.Product) string {
+func FormatProducts(products []models.Product) string {
 	var sb strings.Builder
 	fmt.Fprint(&sb, "We have available:")
 	for _, v := range products {
-		fmt.Fprintf(&sb, "\n %v ", v.Name)
+		fmt.Fprintf(&sb, "\n %v", v.Name)
 	}
 	fmt.Fprintf(&sb, "%v", "\n")
 	return sb.String()

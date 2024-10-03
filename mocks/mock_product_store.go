@@ -8,7 +8,7 @@ import (
 )
 
 type MockProductStore struct {
-	mock.Mock
+	mock.Mock 
 }
 
 func (p *MockProductStore) GetAvailableProducts() ([]models.Product, error) {

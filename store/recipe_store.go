@@ -37,7 +37,7 @@ var Recipes = map[string]models.Recipe{
 }
 
 type IRecipeStore interface{
-	 GetRecipe(id string) (*models.Recipe, error)
+	 GetRecipe(id string) (models.Recipe, error)
 }
 
 // RecipeStore provides crud operations on the persistent store of product recipes
@@ -53,9 +53,9 @@ func NewRecipeStore() *RecipeStore {
 }
 
 // GetRecipe returns recipe with given if if it exists. Otherwise nil
-func (r *RecipeStore) GetRecipe(id string) (*models.Recipe, error) {
+func (r *RecipeStore) GetRecipe(id string) (models.Recipe, error) {
 	if v, ok := r.AvailableRecipes[id]; ok {
-		return &v, nil
+		return v, nil
 	}
-	return nil, fmt.Errorf("recipe Id: %v is not available", id)
+	return models.Recipe{}, fmt.Errorf("recipe Id: %v is not available", id)
 }
