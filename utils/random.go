@@ -2,16 +2,14 @@ package utils
 
 import "math/rand"
 
-type IRandom interface {
+// RandomProvider has method set of random generator functions for testing
+type RandomProvider interface {
 	GetRandom(max int) int
 }
 
+// Random has methods that wrap math/rand package functions
+// to allow them to be mocked for testing
 type Random struct {
-	RandomValue int
-}
-
-func NewRandom() *Random {
-	return &Random{}
 }
 
 // GetRandom returns a random int between 0 and given max

@@ -8,11 +8,13 @@ import (
 	"github.com/judewood/bakery/store"
 )
 
+// CakeBaker bakes the cake using the recipe
 type CakeBaker struct {
-	recipeStore store.IRecipeStore
+	recipeStore store.RecipeStorer
 }
 
-func NewCakeBaker(recipeStore store.IRecipeStore) *CakeBaker {
+// NewCakeBaker returns address of CakeBaker struct 
+func NewCakeBaker(recipeStore store.RecipeStorer) *CakeBaker {
 	return &CakeBaker{
 		recipeStore: recipeStore,
 	}

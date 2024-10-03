@@ -13,9 +13,9 @@ func TestBake(t *testing.T) {
 	sampleRecipe := models.Recipe{
 		ID: "2", //"plain cookie"
 		Ingredients: []models.Ingredient{
-			{Name: models.Flour, Quantity: 300},
-			{Name: models.Butter, Quantity: 200},
-			{Name: models.Sugar, Quantity: 200},
+			{Name: "flour", Quantity: 300},
+			{Name: "butter", Quantity: 200},
+			{Name: "sugar", Quantity: 200},
 		},
 		BakeTime: 0,
 	}
