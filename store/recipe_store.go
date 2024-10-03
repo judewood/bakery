@@ -15,7 +15,7 @@ var Recipes = map[string]models.Recipe{
 			{Name: models.Eggs, Quantity: 4},
 			{Name: models.Sugar, Quantity: 400},
 		},
-		Method: models.Bake{Minutes: 15},
+		BakeTime: 3,
 	},
 	"2": {
 		ID: "2", //"plain cookie"
@@ -24,7 +24,7 @@ var Recipes = map[string]models.Recipe{
 			{Name: models.Butter, Quantity: 200},
 			{Name: models.Sugar, Quantity: 200},
 		},
-		Method: models.Bake{Minutes: 10},
+		BakeTime: 1,
 	},
 	"3": {
 		ID: "3", //"Doughnut"
@@ -32,8 +32,12 @@ var Recipes = map[string]models.Recipe{
 			{Name: models.Flour, Quantity: 500},
 			{Name: models.Sugar, Quantity: 300},
 		},
-		Method: models.Bake{Minutes: 5},
+		BakeTime: 2,
 	},
+}
+
+type IRecipeStore interface{
+	 GetRecipe(id string) (*models.Recipe, error)
 }
 
 // RecipeStore provides crud operations on the persistent store of product recipes
