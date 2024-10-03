@@ -8,22 +8,16 @@ var products = []models.Product{
 	{Name: "Doughnuts", RecipeID: "3"},
 }
 
-type IProductStore interface {
+// ProductStorer contains set of Product CRUD operations
+type ProductStorer interface {
 	GetAvailableProducts() ([]models.Product, error)
 }
 
-// RecipeStore provides crud operations on the persistent store of product recipes
+// ProductStore provides crud operations for products
 type ProductStore struct {
-	AvailableProducts []models.Product
 }
 
-// New returns pointer to RecipeStore
-func NewProductStore() *ProductStore {
-	return &ProductStore{
-		AvailableProducts: products,
-	}
-}
-
+// GetAvailableProducts returns a slice of all the bakery's  products 
 func (p *ProductStore) GetAvailableProducts() ([]models.Product, error) {
 	return products, nil
 }

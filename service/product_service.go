@@ -8,16 +8,18 @@ import (
 	"github.com/judewood/bakery/store"
 )
 
+// ProductService applies business logic to bakery products
 type ProductService struct {
-	productStore store.IProductStore
+	productStore store.ProductStorer
 }
 
-func NewProductService(productStore store.IProductStore) *ProductService {
+// NewProductService returns a pointer to a ProductService
+func NewProductService(productStore store.ProductStorer) *ProductService {
 	return &ProductService{
 		productStore: productStore,
 	}
 }
-
+// GetAvailableProducts returns a slice of all the bakery's  products 
 func (p *ProductService) GetAvailableProducts() ([]models.Product, error) {
 
 	availableProducts, err := p.productStore.GetAvailableProducts()
@@ -28,6 +30,7 @@ func (p *ProductService) GetAvailableProducts() ([]models.Product, error) {
 
 }
 
+// FormatProducts formats a slice of products for display
 func FormatProducts(products []models.Product) string {
 	var sb strings.Builder
 	fmt.Fprint(&sb, "We have available:")

@@ -11,11 +11,11 @@ import (
 )
 
 func main() {
-	productStore := store.NewProductStore()
-	recipeStore := store.NewRecipeStore()
+	productStore := new(store.ProductStore)
+	recipeStore := new(store.RecipeStore)
 
 	productService := service.NewProductService(productStore)
-	random := utils.NewRandom()
+	random := new(utils.Random)
 
 	bakerService := service.NewCakeBaker(recipeStore)
 
