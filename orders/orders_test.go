@@ -17,9 +17,9 @@ func TestRandomOrder(t *testing.T) {
 	}
 
 	wantedItems := []models.ProductQuantity{
-		{ProductID: "Vanilla cake", Quantity: 3},
-		{ProductID: "plain cookie", Quantity: 3},
-		{ProductID: "Doughnut", Quantity: 3},
+		{ProductID: "Vanilla cake", RecipeID: "1", Quantity: 3},
+		{ProductID: "plain cookie", RecipeID: "2", Quantity: 3},
+		{ProductID: "Doughnut", RecipeID: "3", Quantity: 3},
 	}
 
 	mockRandom := mocks.NewMockRandom()
