@@ -5,25 +5,31 @@ import (
 	"strings"
 
 	"github.com/judewood/bakery/models"
+	"github.com/judewood/bakery/store"
 	"github.com/judewood/bakery/utils"
 )
 
 // Order is an order for one of more products
 type Order struct {
-	Random utils.RandomProvider
-	Items  []models.ProductQuantity
+	productStorer store.ProductStorer
+	Random         utils.RandomProvider
+	Items          []models.ProductQuantity
 }
 
 // NewOrder returns a  pointer to an Order
-func NewOrder(random utils.RandomProvider) *Order {
+func NewOrder(productStorer store.ProductStorer, random utils.RandomProvider) *Order {
 	return &Order{
-		Random: random,
+		productStorer: productStorer,
+		Random:         random,
 	}
 }
 
 // RandomOrder generates a random order
-func (o *Order) RandomOrder(availableProducts []models.Product) *Order {
-
+func (o *Order) RandomOrder() (Order, error) {
+	availableProducts, err := o.productStorer.GetAvailableProducts()
+	if err != nil {
+		return Order{}, err
+	}
 	for _, product := range availableProducts {
 		productQuantity := models.ProductQuantity{
 			ProductID: product.Name,
@@ -34,7 +40,7 @@ func (o *Order) RandomOrder(availableProducts []models.Product) *Order {
 			o.Items = append(o.Items[:], productQuantity)
 		}
 	}
-	return o
+	return *o, nil
 }
 
 // FormatOrder formats an order for display

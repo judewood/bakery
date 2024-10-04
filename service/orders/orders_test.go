@@ -22,13 +22,40 @@ func TestRandomOrder(t *testing.T) {
 		{ProductID: "Doughnut", RecipeID: "3", Quantity: 3},
 	}
 
-	mockRandom := mocks.NewMockRandom()
-	mockRandom.On("GetRandom", 5).Return(3)
+	type testCase struct {
+		wantItems        []models.ProductQuantity
+		wantError        error
+		availProducts    []models.Product
+		availProductsErr error
+	}
 
-	order := NewOrder(mockRandom).RandomOrder(availableProducts)
+	testCases := []testCase{
+		{
+			wantItems:        wantedItems,
+			wantError:        nil,
+			availProducts:    availableProducts,
+			availProductsErr: nil,
+		},
+	}
 
-	if !reflect.DeepEqual(wantedItems, order.Items) {
-		t.Errorf("Failed TestRandomOrder. \nWanted %v\nGot %v", wantedItems, order.Items)
+	for _, testCase := range testCases {
+		mockProductStore := new(mocks.MockProductStore)
+		mockProductStore.On("GetAvailableProducts").Return(testCase.availProducts, testCase.availProductsErr)
+
+		mockRandom := mocks.NewMockRandom()
+		mockRandom.On("GetRandom", 5).Return(3)
+
+		order, gotError := NewOrder(mockProductStore, mockRandom).RandomOrder()
+
+		if !reflect.DeepEqual(testCase.wantItems, order.Items) {
+			t.Errorf("Failed TestRandomOrder. \nWanted %v\nGot %v", wantedItems, order.Items)
+		}
+		if testCase.wantError == nil && gotError != nil {
+			t.Errorf("Failed TestRandomOrder.\nGot Error %v", gotError.Error())
+		}
+		if testCase.wantError != nil && gotError == nil {
+			t.Errorf("Failed TestRandomOrder.\nExpected Error %v", testCase.wantError)
+		}
 	}
 }
 
@@ -36,7 +63,10 @@ func TestFormatOrder(t *testing.T) {
 	mockRandom := mocks.NewMockRandom()
 	mockRandom.On("GetRandom", 5).Return(3)
 
-	order := NewOrder(mockRandom).RandomOrder(availableProducts)
+	mockProductStore := new(mocks.MockProductStore)
+	mockProductStore.On("GetAvailableProducts").Return(availableProducts, nil)
+
+	order, _ := NewOrder(mockProductStore, mockRandom).RandomOrder()
 	want := "\n3 of Vanilla cake\n3 of plain cookie\n3 of Doughnut"
 	got := order.FormatOrder()
 
