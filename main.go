@@ -2,7 +2,10 @@ package main
 
 import (
 	"fmt"
+	"log"
 
+	"github.com/gin-gonic/gin"
+	"github.com/judewood/bakery/controller"
 	"github.com/judewood/bakery/models"
 	"github.com/judewood/bakery/service/bakers"
 	"github.com/judewood/bakery/service/orders"
@@ -16,14 +19,25 @@ func main() {
 	recipeStore := new(store.RecipeStore)
 
 	productService := products.NewProductService(productStore)
+	productController := controller.NewProductController(productService)
+
 	random := new(utils.Random)
 
 	bakerService := bakers.NewCakeBaker(recipeStore)
 
-	availableProducts, _ := productService.GetAvailableProducts()
-	fmt.Print(products.FormatProducts(availableProducts))
+	server := gin.Default()
 
-	order := orders.NewOrder(random).RandomOrder(availableProducts)
+	server.GET("/products", func(ctx *gin.Context) {
+		ctx.JSON(200, productController.GetProducts())
+	})
+
+	//server.Run(":8080")
+
+	order, err := orders.NewOrder(productStore, random).RandomOrder()
+	if err != nil {
+		log.Panic(err)
+	}
+
 	fmt.Print(order.FormatOrder())
 
 	ch := make(chan models.ProductQuantity)
@@ -40,7 +54,5 @@ func main() {
 			fmt.Println(err.Error())
 		}
 	}
-
 	bakerService.Package()
-
 }

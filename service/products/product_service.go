@@ -8,6 +8,10 @@ import (
 	"github.com/judewood/bakery/store"
 )
 
+type ProductServer interface{
+GetAvailableProducts() ([]models.Product, error)
+}
+
 // ProductService applies business logic to bakery products
 type ProductService struct {
 	productStore store.ProductStorer
@@ -30,6 +34,10 @@ func (p *ProductService) GetAvailableProducts() ([]models.Product, error) {
 
 }
 
+func (p *ProductService) Add(models.Product) (models.Product, error) {
+	return models.Product{}, nil
+}
+
 // FormatProducts formats a slice of products for display
 func FormatProducts(products []models.Product) string {
 	var sb strings.Builder
@@ -40,3 +48,4 @@ func FormatProducts(products []models.Product) string {
 	fmt.Fprintf(&sb, "%v", "\n")
 	return sb.String()
 }
+

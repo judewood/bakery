@@ -14,8 +14,5 @@ type MockProductStore struct {
 func (p *MockProductStore) GetAvailableProducts() ([]models.Product, error) {
 	fmt.Println("Mocked GetAvailableProducts")
 	args := p.Called()
-	if args.Get(1) == nil { //no error
-		return args.Get(0).([]models.Product), nil
-	}
-	return args.Get(0).([]models.Product), args.Get(1).(error)
+	return args.Get(0).([]models.Product), args.Error(1)
 }
