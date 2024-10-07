@@ -4,32 +4,29 @@ import (
 	"errors"
 	"reflect"
 	"testing"
-
-	"github.com/judewood/bakery/mocks"
-	"github.com/judewood/bakery/models"
 )
 
-var sampleProducts = []models.Product{
-		{Name: "Vanilla cake", RecipeID: "1"},
-		{Name: "plain cookie", RecipeID: "2"},
-		{Name: "Doughnut", RecipeID: "3"},
-	}
+var sampleProducts = []Product{
+	{Name: "Vanilla cake", RecipeID: "1"},
+	{Name: "plain cookie", RecipeID: "2"},
+	{Name: "Doughnut", RecipeID: "3"},
+}
 
 func TestGetAvailableProducts(t *testing.T) {
 	type testCase struct {
-		want []models.Product
+		want []Product
 		err  error
 	}
 
 	mockError := errors.New("Mocked error")
 	testCases := []testCase{
 		{want: nil, err: mockError},
-		{want: []models.Product{}, err: nil},
+		{want: []Product{}, err: nil},
 		{want: sampleProducts, err: nil},
 	}
 
 	for _, testCase := range testCases {
-		mockProductStore := new(mocks.MockProductStore)
+		mockProductStore := new(MockProductStore)
 		mockProductStore.On("GetAvailableProducts").Return(testCase.want, testCase.err)
 
 		productService := NewProductService(mockProductStore)

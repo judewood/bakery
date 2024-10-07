@@ -4,15 +4,15 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/judewood/bakery/mocks"
-	"github.com/judewood/bakery/models"
+	"github.com/judewood/bakery/internal/orders"
+	"github.com/judewood/bakery/internal/recipes"
 )
 
 func TestBake(t *testing.T) {
 	mockError := errors.New("Mocked error")
-	sampleRecipe := models.Recipe{
+	sampleRecipe := recipes.Recipe{
 		ID: "2", //"plain cookie"
-		Ingredients: []models.Ingredient{
+		Ingredients: []recipes.Ingredient{
 			{Name: "flour", Quantity: 300},
 			{Name: "butter", Quantity: 200},
 			{Name: "sugar", Quantity: 200},
@@ -20,7 +20,7 @@ func TestBake(t *testing.T) {
 		BakeTime: 0,
 	}
 
-	sampleProductQuantity := []models.ProductQuantity{
+	sampleProductQuantity := []orders.ProductQuantity{
 		{ProductID: "Vanilla Cake",
 			RecipeID: "1",
 			Quantity: 1,
@@ -32,7 +32,7 @@ func TestBake(t *testing.T) {
 	}
 
 	type TestCase struct {
-		Input models.ProductQuantity
+		Input orders.ProductQuantity
 		err   error
 	}
 
@@ -46,9 +46,9 @@ func TestBake(t *testing.T) {
 			err:   nil,
 		},
 	}
-	mockRecipeStore := mocks.NewMockRecipeStore()
+	mockRecipeStore := recipes.NewMockRecipeStore()
 	for _, testCase := range testCases {
-		mockRecipeStore.On("GetRecipe", sampleProductQuantity[0].RecipeID).Return(models.Recipe{}, errors.New("Mocked error"))
+		mockRecipeStore.On("GetRecipe", sampleProductQuantity[0].RecipeID).Return(recipes.Recipe{}, errors.New("Mocked error"))
 		mockRecipeStore.On("GetRecipe", sampleProductQuantity[1].RecipeID).Return(sampleRecipe, nil)
 
 		cakeBaker := NewCakeBaker(mockRecipeStore)

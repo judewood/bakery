@@ -2,16 +2,14 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/judewood/bakery/controller"
 	"github.com/judewood/bakery/internal/products"
-	"github.com/judewood/bakery/store"
 )
 
 func main() {
-	productStore := new(store.ProductStore)
+	productStore := new(products.ProductStore)
 
 	productService := products.NewProductService(productStore)
-	productController := controller.NewProductController(productService)
+	productController := products.NewProductController(productService)
 
 	server := gin.Default()
 

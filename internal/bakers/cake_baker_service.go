@@ -4,17 +4,17 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/judewood/bakery/models"
-	"github.com/judewood/bakery/store"
+	"github.com/judewood/bakery/internal/orders"
+	"github.com/judewood/bakery/internal/recipes"
 )
 
 // CakeBaker bakes the cake using the recipe
 type CakeBaker struct {
-	recipeStore store.RecipeStorer
+	recipeStore recipes.RecipeStorer
 }
 
-// NewCakeBaker returns address of CakeBaker struct 
-func NewCakeBaker(recipeStore store.RecipeStorer) *CakeBaker {
+// NewCakeBaker returns address of CakeBaker struct
+func NewCakeBaker(recipeStore recipes.RecipeStorer) *CakeBaker {
 	return &CakeBaker{
 		recipeStore: recipeStore,
 	}
@@ -22,7 +22,7 @@ func NewCakeBaker(recipeStore store.RecipeStorer) *CakeBaker {
 
 // Bake will receive Cake products from the rawProducts channel.
 // It will Bake the products and then send the baked products onto a new channel for packaging
-func (cb *CakeBaker) Bake(rawProduct models.ProductQuantity) error {
+func (cb *CakeBaker) Bake(rawProduct orders.ProductQuantity) error {
 	recipe, err := cb.recipeStore.GetRecipe(rawProduct.RecipeID)
 	if err != nil {
 		return err

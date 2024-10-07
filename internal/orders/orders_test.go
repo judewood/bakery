@@ -4,11 +4,11 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/judewood/bakery/mocks"
-	"github.com/judewood/bakery/models"
+	"github.com/judewood/bakery/internal/products"
+	"github.com/judewood/bakery/random"
 )
 
-var availableProducts = []models.Product{
+var availableProducts = []products.Product{
 	{Name: "Vanilla cake", RecipeID: "1"},
 	{Name: "plain cookie", RecipeID: "2"},
 	{Name: "Doughnut", RecipeID: "3"},
@@ -16,16 +16,16 @@ var availableProducts = []models.Product{
 
 func TestRandomOrder(t *testing.T) {
 
-	wantedItems := []models.ProductQuantity{
+	wantedItems := []ProductQuantity{
 		{ProductID: "Vanilla cake", RecipeID: "1", Quantity: 3},
 		{ProductID: "plain cookie", RecipeID: "2", Quantity: 3},
 		{ProductID: "Doughnut", RecipeID: "3", Quantity: 3},
 	}
 
 	type testCase struct {
-		wantItems        []models.ProductQuantity
+		wantItems        []ProductQuantity
 		wantError        error
-		availProducts    []models.Product
+		availProducts    []products.Product
 		availProductsErr error
 	}
 
@@ -39,10 +39,10 @@ func TestRandomOrder(t *testing.T) {
 	}
 
 	for _, testCase := range testCases {
-		mockProductStore := new(mocks.MockProductStore)
+		mockProductStore := new(products.MockProductStore)
 		mockProductStore.On("GetAvailableProducts").Return(testCase.availProducts, testCase.availProductsErr)
 
-		mockRandom := mocks.NewMockRandom()
+		mockRandom := random.NewMockRandom()
 		mockRandom.On("GetRandom", 5).Return(3)
 
 		order, gotError := NewOrder(mockProductStore, mockRandom).RandomOrder()
@@ -60,10 +60,10 @@ func TestRandomOrder(t *testing.T) {
 }
 
 func TestFormatOrder(t *testing.T) {
-	mockRandom := mocks.NewMockRandom()
+	mockRandom := random.NewMockRandom()
 	mockRandom.On("GetRandom", 5).Return(3)
 
-	mockProductStore := new(mocks.MockProductStore)
+	mockProductStore := new(products.MockProductStore)
 	mockProductStore.On("GetAvailableProducts").Return(availableProducts, nil)
 
 	order, _ := NewOrder(mockProductStore, mockRandom).RandomOrder()

@@ -6,16 +6,16 @@ import (
 
 	"github.com/judewood/bakery/internal/bakers"
 	"github.com/judewood/bakery/internal/orders"
-	"github.com/judewood/bakery/models"
-	"github.com/judewood/bakery/store"
-	"github.com/judewood/bakery/utils"
+	"github.com/judewood/bakery/internal/products"
+	"github.com/judewood/bakery/internal/recipes"
+	"github.com/judewood/bakery/random"
 )
 
 func main() {
-	productStore := new(store.ProductStore)
-	recipeStore := new(store.RecipeStore)
+	productStore := new(products.ProductStore)
+	recipeStore := new(recipes.RecipeStore)
 
-	random := new(utils.Random)
+	random := new(random.Random)
 
 	bakerService := bakers.NewCakeBaker(recipeStore)
 
@@ -26,7 +26,7 @@ func main() {
 
 	fmt.Print(order.FormatOrder())
 
-	ch := make(chan models.ProductQuantity)
+	ch := make(chan orders.ProductQuantity)
 	go func() {
 		for _, v := range order.Items {
 			ch <- v

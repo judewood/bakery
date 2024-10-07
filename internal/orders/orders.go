@@ -4,23 +4,29 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/judewood/bakery/models"
-	"github.com/judewood/bakery/store"
-	"github.com/judewood/bakery/utils"
+	"github.com/judewood/bakery/internal/products"
+	"github.com/judewood/bakery/random"
 )
+
+// ProductQuantity represents a quantity of a product in an order
+type ProductQuantity struct {
+	ProductID string `json:"productId"`
+	RecipeID  string `json:"recipeId"`
+	Quantity  int    `json:"quantity"`
+}
 
 // Order is an order for one of more products
 type Order struct {
-	productStorer store.ProductStorer
-	Random         utils.RandomProvider
-	Items          []models.ProductQuantity
+	productStorer products.ProductStorer
+	Random        random.RandomProvider
+	Items         []ProductQuantity
 }
 
 // NewOrder returns a  pointer to an Order
-func NewOrder(productStorer store.ProductStorer, random utils.RandomProvider) *Order {
+func NewOrder(productStorer products.ProductStorer, random random.RandomProvider) *Order {
 	return &Order{
 		productStorer: productStorer,
-		Random:         random,
+		Random:        random,
 	}
 }
 
@@ -31,7 +37,7 @@ func (o *Order) RandomOrder() (Order, error) {
 		return Order{}, err
 	}
 	for _, product := range availableProducts {
-		productQuantity := models.ProductQuantity{
+		productQuantity := ProductQuantity{
 			ProductID: product.Name,
 			RecipeID:  product.RecipeID,
 			Quantity:  o.Random.GetRandom(5),
