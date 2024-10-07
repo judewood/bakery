@@ -3,7 +3,7 @@ package controller
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/judewood/bakery/models"
-	"github.com/judewood/bakery/service/products"
+	"github.com/judewood/bakery/internal/products"
 )
 
 type ProductController interface {
