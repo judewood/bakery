@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"path/filepath"
 
@@ -31,7 +32,7 @@ func New(folder string) *Config {
 	configFile := filepath.Join(folder, fmt.Sprintf("%v.toml", env))
 	err := k.Load(file.Provider(configFile), toml.Parser())
 	if err != nil {
-		panic(fmt.Sprintf("Unable to load config file: %s\n %v", configFile, err))
+		log.Panicf("Unable to load config file: %s\n %v", configFile, err)
 	}
 	return &Config{provider: k}
 }
