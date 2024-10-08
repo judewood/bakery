@@ -13,7 +13,7 @@ import (
 )
 
 func main() {
-	config := config.New()
+	config := config.New("./environments")
 	logLevel := config.GetStringSetting("logs.level")
 	fmt.Printf("\nLogging at level: %s", logLevel)
 	fmt.Println()
