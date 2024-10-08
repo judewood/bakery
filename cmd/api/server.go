@@ -2,16 +2,20 @@ package main
 
 import (
 	"fmt"
+	"log/slog"
 
 	"github.com/gin-gonic/gin"
 	"github.com/judewood/bakery/config"
 	"github.com/judewood/bakery/internal/products"
+	"github.com/judewood/bakery/logger"
 )
+
+var Logger *slog.Logger
 
 func main() {
 	config := config.New("./environments")
-	logLevel := config.GetStringSetting("logs.level")
-	fmt.Printf("\nLogging at level: %s", logLevel)
+	Logger = logger.GetLogger(config.GetStringSetting("logs.level"))
+
 	fmt.Println()
 	productStore := new(products.ProductStore)
 
