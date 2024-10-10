@@ -4,15 +4,18 @@ import (
 	"fmt"
 	"os"
 	"testing"
+
+	"github.com/judewood/bakery/myfmt"
 )
 
 func TestNew_PanicsWhenEnvConfigFileNotFound(t *testing.T) {
-	defer func() { osEnvFunction = os.Getenv
+	defer func() {
+		osEnvFunction = os.Getenv
 		fmt.Println("osEnvFunction reset back to os.Getenv")
 	}()
 	defer func() {
 		if r := recover(); r == nil {
-			t.Errorf("The New function should have paniced")
+			myfmt.Errorf(t, "The New function should have paniced")
 		}
 	}()
 	osEnvFunction = func(string) string {

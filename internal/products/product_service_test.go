@@ -4,6 +4,8 @@ import (
 	"errors"
 	"reflect"
 	"testing"
+
+	"github.com/judewood/bakery/myfmt"
 )
 
 var sampleProducts = []Product{
@@ -34,15 +36,15 @@ func TestGetAvailableProducts(t *testing.T) {
 		gotProducts, gotError := productService.GetAvailableProducts()
 
 		if !reflect.DeepEqual(gotProducts, testCase.want) {
-			t.Errorf("Failed TestGetAvailableProducts.\nWanted: %v \nGot %v", testCase.want, gotProducts)
+			myfmt.Errorf(t, "Failed TestGetAvailableProducts.\nWanted: %v \nGot %v", testCase.want, gotProducts)
 		}
 
 		if testCase.err == nil && gotError != nil {
-			t.Errorf("Failed TestGetAvailableProducts.\nGot Error %v", gotError.Error())
+			myfmt.Errorf(t, "Failed TestGetAvailableProducts.\nGot Error %v", gotError.Error())
 		}
 
 		if testCase.err != nil && gotError == nil {
-			t.Errorf("Failed TestGetAvailableProducts.\nExpected Error %v", testCase.err.Error())
+			myfmt.Errorf(t, "Failed TestGetAvailableProducts.\nExpected Error %v", testCase.err.Error())
 		}
 
 	}
@@ -54,6 +56,6 @@ func TestFormatProducts(t *testing.T) {
 	got := FormatProducts(sampleProducts)
 
 	if got != want {
-		t.Errorf("Failed TestFormatProducts. \nWanted:\n *%v*\nGot:\n *%v*", want, got)
+		myfmt.Errorf(t, "Failed TestFormatProducts. \nWanted:\n *%v*\nGot:\n *%v*", want, got)
 	}
 }
