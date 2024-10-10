@@ -6,6 +6,7 @@ import (
 
 	"github.com/judewood/bakery/internal/orders"
 	"github.com/judewood/bakery/internal/recipes"
+	"github.com/judewood/bakery/myfmt"
 )
 
 func TestBake(t *testing.T) {
@@ -55,10 +56,10 @@ func TestBake(t *testing.T) {
 		gotError := cakeBaker.Bake(testCase.Input)
 
 		if testCase.err == nil && gotError != nil {
-			t.Errorf("Failed TestBake.\nGot Error %v", gotError.Error())
+			myfmt.Errorf(t,"Failed TestBake.\nGot Error %v", gotError.Error())
 		}
 		if testCase.err != nil && gotError == nil {
-			t.Errorf("Failed TestBake.\nExpected Error %v", testCase.err)
+			myfmt.Errorf(t, "Failed TestBake.\nExpected Error %v", testCase.err)
 		}
 	}
 

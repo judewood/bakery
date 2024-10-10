@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/judewood/bakery/internal/products"
+	"github.com/judewood/bakery/myfmt"
 	"github.com/judewood/bakery/random"
 )
 
@@ -48,14 +49,15 @@ func TestRandomOrder(t *testing.T) {
 		order, gotError := NewOrder(mockProductStore, mockRandom).RandomOrder()
 
 		if !reflect.DeepEqual(testCase.wantItems, order.Items) {
-			t.Errorf("Failed TestRandomOrder. \nWanted %v\nGot %v", wantedItems, order.Items)
+			myfmt.Errorf(t, "Failed TestRandomOrder. \nWanted %v\nGot %v", wantedItems, order.Items)
 		}
 		if testCase.wantError == nil && gotError != nil {
-			t.Errorf("Failed TestRandomOrder.\nGot Error %v", gotError.Error())
+			myfmt.Errorf(t, "Failed TestRandomOrder.\nGot Error %v", gotError.Error())
 		}
 		if testCase.wantError != nil && gotError == nil {
-			t.Errorf("Failed TestRandomOrder.\nExpected Error %v", testCase.wantError)
+			myfmt.Errorf(t, "Failed TestRandomOrder.\nExpected Error %v", testCase.wantError)
 		}
+		t.Log()
 	}
 }
 

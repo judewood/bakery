@@ -17,7 +17,6 @@ type Recipe struct {
 	BakeTime    int          `json:"bakeTime"`
 }
 
-
 // Recipes is in memory store of recipe for each product that the bakery sells
 var Recipes = map[string]Recipe{
 	"1": {
