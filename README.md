@@ -16,11 +16,15 @@ Comprised of two applications
 
 2. Build game: `go build ./cmd/game`
 
-## Run
+## Running the code locally
+
 
 1. Run api: `go build ./cmd/api`
 
-Open http://localhost:8080/products in a browser to see available products
+If you  install VScode extension  REST Client by Huachao Mao then you can run http requests against the code by clicking on 'Send Request' in a *.http  file inside the api-requests folder
+
+Otherwise open the url (eg http://localhost:8080/products) in a browser
+
 
 2. Build game: `go run ./cmd/game`
 
