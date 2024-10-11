@@ -2,38 +2,35 @@ package products
 
 import (
 	"encoding/json"
+	"io"
 	"net/http"
+	"net/http/httptest"
 	"reflect"
 	"testing"
-	"time"
 
-	"github.com/judewood/bakery/consts"
+	"github.com/judewood/bakery/internal/router"
 	"github.com/judewood/bakery/myfmt"
 )
 
+
 func TestGetProducts(t *testing.T) {
+	r := router.SetupRouter()
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest("GET", "/products", nil)
 	mockProductService := NewMockProductService()
-	mockProductService.On("GetAvailableProducts").Return(products)
-	url := consts.Local_Base_Url + "/products"
+	mockProductService.On("GetAvailableProducts").Return(sampleProducts, nil)
 
-	got := []Product{}
-	err := getJson(url, &got)
-	if err != nil {
-		myfmt.Fatalf(t, "error while decoding available products to json format: %v", err)
-	} 
-	t.Logf("just got %v", got)
-	if !reflect.DeepEqual(got, products) {
-		myfmt.Fatalf(t, "\nWanted: %v. \n Got %v", products, got)
+	controller := NewProductController(mockProductService)
+	r = router.AddRouteGetProducts(r, controller.GetProducts)
+	r.ServeHTTP(w, req)
+
+	if w.Code != http.StatusOK {
+		myfmt.Errorf(t, "\nExpected status %v.\nGot  %v", http.StatusOK, w.Code)
 	}
-}
-
-func getJson(url string, target interface{}) error {
-	var myClient = &http.Client{Timeout: 10 * time.Second}
-	r, err := myClient.Get(url)
-	if err != nil {
-		return err
+		responseData, _ := io.ReadAll(w.Body)
+	gotProduct := []Product{}
+	json.Unmarshal(responseData, &gotProduct)
+	if !reflect.DeepEqual(gotProduct, sampleProducts) {
+		myfmt.Errorf(t, "Failed to get products. \nWanted: %v\nGot: %v", sampleProducts, w.Body)
 	}
-	defer r.Body.Close()
-
-	return json.NewDecoder(r.Body).Decode(target)
 }

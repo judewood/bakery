@@ -16,6 +16,6 @@ return &MockProductService{}
 
 func(m *MockProductService) GetAvailableProducts() ([]Product, error){
      args := m.Called()
-	 fmt.Println("calle with", args.Get(0).([]Product))
+	 fmt.Println("called with", args.Get(0).([]Product))
 	 return args.Get(0).([]Product), args.Error(1)
 }
