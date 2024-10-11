@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"log/slog"
 
-	"github.com/gin-gonic/gin"
 	"github.com/judewood/bakery/config"
 	"github.com/judewood/bakery/internal/products"
+	"github.com/judewood/bakery/internal/router"
 	"github.com/judewood/bakery/logger"
 )
 
@@ -21,12 +21,9 @@ func main() {
 
 	productService := products.NewProductService(productStore)
 	productController := products.NewProductController(productService)
-
-	server := gin.Default()
-
-	server.GET("/products", func(ctx *gin.Context) {
-		ctx.JSON(200, productController.GetProducts())
-	})
+	server := router.SetupRouter()
+	server = router.AddRouteGetProducts(server, productController.GetProducts)
+	//server = server.GET("/products",  &productController)
 
 	server.Run(":8080")
 }

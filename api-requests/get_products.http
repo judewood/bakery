@@ -1,0 +1,4 @@
+GET http://localhost:8080/products HTTP/1.1 
+Content-Type: application/json
+
+[{"name":"Vanilla cakes","recipeId":"1"},{"name":"Plain cookies","recipeId":"2"},{"name":"Doughnuts","recipeId":"3"}]
