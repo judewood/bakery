@@ -1,13 +1,15 @@
 package products
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 )
 
 // ProductServer provides a product service
-type ProductServer interface{
-GetAvailableProducts() ([]Product, error)
+type ProductServer interface {
+	GetAvailableProducts() ([]Product, error)
+	Add(product Product) (Product, error)
 }
 
 // ProductService applies business logic to bakery products
@@ -21,7 +23,8 @@ func NewProductService(productStore ProductStorer) *ProductService {
 		productStore: productStore,
 	}
 }
-// GetAvailableProducts returns a slice of all the bakery's  products 
+
+// GetAvailableProducts returns a slice of all the bakery's  products
 func (p *ProductService) GetAvailableProducts() ([]Product, error) {
 
 	availableProducts, err := p.productStore.GetAvailableProducts()
@@ -32,8 +35,13 @@ func (p *ProductService) GetAvailableProducts() ([]Product, error) {
 
 }
 
-func (p *ProductService) Add(Product) (Product, error) {
-	return Product{}, nil
+// Add adds new product to store
+func (p *ProductService) Add(product Product) (Product, error) {
+    if  isInvalid, err := isInvalid(product); isInvalid {
+		return Product{}, err
+	}
+	added, err := p.productStore.AddProduct(product)
+	return added, err
 }
 
 // FormatProducts formats a slice of products for display
@@ -47,3 +55,10 @@ func FormatProducts(products []Product) string {
 	return sb.String()
 }
 
+// isInvalid returns whether this is a valid product and error if it is not valid
+func isInvalid(product Product) (bool, error) {
+	if product.Name == "" || product.RecipeID == "" {
+		return true, errors.New("missing Required field")
+	}
+	return false, nil
+}

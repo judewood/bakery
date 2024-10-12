@@ -15,3 +15,9 @@ func (p *MockProductStore) GetAvailableProducts() ([]Product, error) {
 	args := p.Called()
 	return args.Get(0).([]Product), args.Error(1)
 }
+
+func (p *MockProductStore) AddProduct(Product)(Product, error) {
+	fmt.Println("Mocked AddProduct")
+	args := p.Called()
+	return args.Get(0).(Product), args.Error(1)
+}

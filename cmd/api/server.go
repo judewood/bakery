@@ -22,8 +22,7 @@ func main() {
 	productService := products.NewProductService(productStore)
 	productController := products.NewProductController(productService)
 	server := router.SetupRouter()
-	server = router.AddRouteGetProducts(server, productController.GetProducts)
-	//server = server.GET("/products",  &productController)
-
+	server = router.GetProducts(server, productController.GetProducts)
+	server = router.AddProduct(server, productController.Add)
 	server.Run(":8080")
 }

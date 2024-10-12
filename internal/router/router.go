@@ -10,8 +10,13 @@ func SetupRouter() *gin.Engine {
 	return r
 }
 
-func AddRouteGetProducts(r *gin.Engine, handler gin.HandlerFunc) *gin.Engine {
+func GetProducts(r *gin.Engine, handler gin.HandlerFunc) *gin.Engine {
 	r.GET("/products", handler)
+	return r
+}
+
+func AddProduct(r *gin.Engine, handler gin.HandlerFunc) *gin.Engine {
+	r.POST("/products", handler)
 	return r
 }
 

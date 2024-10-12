@@ -26,12 +26,22 @@ func (p *ProductController) GetProducts(c *gin.Context) {
 	if err != nil {
 		fmt.Printf("Failed to get available products %v", err)
 		c.IndentedJSON(http.StatusBadRequest, nil)
+		return
 	}
 	c.IndentedJSON(http.StatusOK, v)
 }
 
-func (p *ProductController) Add(ctx *gin.Context) (Product, error) {
-	var product Product
-	ctx.BindJSON(&product)
-	return product, nil
+func (p *ProductController) Add(ctx *gin.Context){
+	product := Product{}
+	err := ctx.BindJSON(&product)
+	if err != nil {
+		fmt.Errorf("\ngin says %v", err)
+		return
+	}
+	added, err := p.productServer.Add(product)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, nil)
+		return	
+	}
+	ctx.JSON(http.StatusCreated, added)	
 }
