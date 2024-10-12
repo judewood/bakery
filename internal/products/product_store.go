@@ -1,9 +1,5 @@
 package products
 
-import (
-	"fmt"
-)
-
 // Product is a saleable food item
 type Product struct {
 	Name     string `json:"name"`
@@ -32,7 +28,6 @@ func (p *ProductStore) GetAvailableProducts() ([]Product, error) {
 }
 
 func (p *ProductStore) AddProduct(product Product) (Product, error) {
-	fmt.Printf("\nAdd new product %v", product)
 	products = append(products, product)
 	return product, nil
 }

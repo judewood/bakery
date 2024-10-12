@@ -44,7 +44,7 @@ func (p *ProductController) Add(ctx *gin.Context) {
 	}
 	added, err := p.productService.Add(product)
 	if err != nil {
-		if err.Error() == "missing required field" {
+		if err.Error() == MissingRequired {
 			ctx.JSON(http.StatusBadRequest, "")
 			return
 		}
