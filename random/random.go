@@ -1,6 +1,8 @@
 package random
 
-import "math/rand"
+import (
+	"math/rand"
+)
 
 // RandomProvider has method set of random generator functions for testing
 type RandomProvider interface {

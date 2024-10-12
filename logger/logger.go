@@ -9,7 +9,7 @@ import (
 
 type String string
 
-func GetLogger(minLevel string) *slog.Logger {
+func InitLogger(minLevel string) {
 	fmt.Printf("\nLogging at level: %s\n", minLevel)
 	opts := &slog.HandlerOptions{
 		Level: ToLogLevel(minLevel),
@@ -17,8 +17,6 @@ func GetLogger(minLevel string) *slog.Logger {
 	logger := slog.New(slog.NewJSONHandler(os.Stdout, opts))
 
 	slog.SetDefault(logger)
-
-	return logger
 }
 
 func ToLogLevel(s string) slog.Level {

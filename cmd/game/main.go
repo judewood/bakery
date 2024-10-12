@@ -14,22 +14,20 @@ import (
 	"github.com/judewood/bakery/random"
 )
 
-var Logger *slog.Logger 
 func main() {
 	config := config.New("./environments")
-	Logger = logger.GetLogger(config.GetStringSetting("logs.level"))
-	fmt.Println()
+	logger.InitLogger(config.GetStringSetting("logs.level"))
 
+	slog.Debug("Bakery is open for business")
 	productStore := new(products.ProductStore)
 	recipeStore := new(recipes.RecipeStore)
-
 	random := new(random.Random)
 
 	bakerService := bakers.NewCakeBaker(recipeStore)
 
 	order, err := orders.NewOrder(productStore, random).RandomOrder()
 	if err != nil {
-		log.Panic(err)
+		log.Fatal(err)
 	}
 
 	fmt.Print(order.FormatOrder())

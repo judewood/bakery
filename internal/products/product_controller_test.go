@@ -141,7 +141,7 @@ func TestAddProduct(t *testing.T) {
 			jsonBody, _ := json.Marshal(&invalid)
 			bodyReader := bytes.NewReader(jsonBody)
 			req, _ := http.NewRequest("POST", "/products", bodyReader)
-			mockProductService.On("Add").Return(Product{}, errors.New("missing required field"))
+			mockProductService.On("Add").Return(Product{}, errors.New(MissingRequired))
 			rtr = router.AddProduct(rtr, controller.Add)
 
 			rtr.ServeHTTP(recorder, req)

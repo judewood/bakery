@@ -2,6 +2,7 @@ package recipes
 
 import (
 	"fmt"
+	"log/slog"
 )
 
 // Ingredient is a food ingredient for a product
@@ -61,5 +62,6 @@ func (r *RecipeStore) GetRecipe(id string) (Recipe, error) {
 	if v, ok := Recipes[id]; ok {
 		return v, nil
 	}
-	return Recipe{}, fmt.Errorf("recipe Id: %v is not available", id)
+	slog.Debug("Recipe not found", "RecipeId", id )
+	return Recipe{}, fmt.Errorf("recipe Id: %v not found", id)
 }

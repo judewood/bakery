@@ -1,7 +1,7 @@
 package bakers
 
 import (
-	"fmt"
+	"log/slog"
 	"time"
 
 	"github.com/judewood/bakery/internal/orders"
@@ -27,12 +27,12 @@ func (cb *CakeBaker) Bake(rawProduct orders.ProductQuantity) error {
 	if err != nil {
 		return err
 	}
-	fmt.Printf("\nBaking %v of %v for %v seconds...", rawProduct.Quantity, rawProduct.ProductID, recipe.BakeTime)
+	slog.Debug("Baking", "Count", rawProduct.Quantity, "Product Id", rawProduct.ProductID, "Duration", recipe.BakeTime)
 	time.Sleep(time.Duration(recipe.BakeTime) * time.Second)
 	return nil
 }
 
 // Package - still to be implemented
 func (cb *CakeBaker) Package() {
-	fmt.Println("\n\nOrder packaged and ready to go")
+	slog.Debug("Order packaged and ready to go")
 }
