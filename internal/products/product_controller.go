@@ -8,12 +8,12 @@ import (
 )
 
 type ProductController struct {
-	productServer ProductServer
+	productService ProductServer
 }
 
 func NewProductController(productServer ProductServer) *ProductController {
 	return &ProductController{
-		productServer: productServer,
+		productService: productServer,
 	}
 }
 
@@ -22,16 +22,34 @@ func Ping(c *gin.Context) {
 }
 
 func (p *ProductController) GetProducts(c *gin.Context) {
-	v, err := p.productServer.GetAvailableProducts()
+	v, err := p.productService.GetAvailableProducts()
 	if err != nil {
 		fmt.Printf("Failed to get available products %v", err)
 		c.IndentedJSON(http.StatusBadRequest, nil)
+		return
+	}
+	if len(v) == 0 {
+		c.IndentedJSON(http.StatusNoContent, v)
+		return
 	}
 	c.IndentedJSON(http.StatusOK, v)
 }
 
-func (p *ProductController) Add(ctx *gin.Context) (Product, error) {
-	var product Product
-	ctx.BindJSON(&product)
-	return product, nil
+func (p *ProductController) Add(ctx *gin.Context) {
+	product := Product{}
+	err := ctx.BindJSON(&product)
+	if err != nil {
+		fmt.Printf("\ngin says %v", err)
+		return
+	}
+	added, err := p.productService.Add(product)
+	if err != nil {
+		if err.Error() == "missing required field" {
+			ctx.JSON(http.StatusBadRequest, "")
+			return
+		}
+		ctx.JSON(http.StatusInternalServerError, "")
+		return
+	}
+	ctx.JSON(http.StatusCreated, added)
 }
