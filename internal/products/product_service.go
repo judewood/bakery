@@ -41,6 +41,7 @@ func (p *ProductService) GetAvailableProducts() ([]Product, error) {
 // Add adds new product to store
 func (p *ProductService) Add(product Product) (Product, error) {
 	if isInvalid, err := isInvalid(product); isInvalid {
+		slog.Warn("failed to add product: %v. Error: %v", "Product", product, err)
 		return Product{}, err
 	}
 	added, err := p.productStore.AddProduct(product)

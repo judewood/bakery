@@ -39,133 +39,113 @@ func setUpAddProductsTest() {
 }
 
 func TestGetProducts(t *testing.T) {
+	testCases := []struct {
+		name   string
+		body   []Product
+		status int
+	}{
+		{name: "some", body: sampleProducts, status: http.StatusOK},
+		{name: "zero", body: []Product{}, status: http.StatusNoContent},
+	}
+
 	t.Log("Given that I have the http server running")
 	{
-		t.Log("When there are  available products")
-		{
-			setUpGetProductsTest()
-			mockProductService.On("GetAvailableProducts").Return(sampleProducts, nil)
-			
-			rtr.ServeHTTP(recorder, req)
+		for i, test := range testCases {
+			tf := func(t *testing.T) {
+				t.Logf("\n test %d: When I have %s products", i, test.name)
+				{
+					setUpGetProductsTest()
+					mockProductService.On("GetAvailableProducts").Return(test.body, nil)
 
-			t.Log("Then I get 200 status")
-			{
-				if recorder.Code == http.StatusOK {
-					t.Log(myfmt.ThumbsUp)
-				} else {
-					t.Errorf("\n%s Got  %v", myfmt.ThumbsDown, recorder.Code)
-				}
-			}
-			t.Log("And I get the sample products")
-			{
-				responseData, _ := io.ReadAll(recorder.Body)
-				gotProduct := []Product{}
-				json.Unmarshal(responseData, &gotProduct)
-				if reflect.DeepEqual(gotProduct, sampleProducts) {
-					t.Log(myfmt.ThumbsUp)
-				} else {
-					t.Errorf("\n%s Got: %v", myfmt.ThumbsDown, recorder.Body)
-				}
-			}
-		}
+					rtr.ServeHTTP(recorder, req)
 
-		t.Log("When there are no available products")
-		{
-			setUpGetProductsTest()
-			mockProductService.On("GetAvailableProducts").Return([]Product{}, nil)
-			
-			rtr.ServeHTTP(recorder, req)
-
-			t.Log("Then I get status 204")
-			{
-				if recorder.Code == http.StatusNoContent {
-					t.Log(myfmt.ThumbsUp)
-				} else {
-					t.Errorf("\n%s Got %v", myfmt.ThumbsDown, recorder.Code)
+					t.Logf("Then I get %d status", test.status)
+					{
+						if recorder.Code == test.status {
+							t.Log(myfmt.ThumbsUp)
+						} else {
+							t.Errorf("\n%s Got  %v", myfmt.ThumbsDown, recorder.Code)
+						}
+					}
+					t.Logf("And I get %v", test.body)
+					{
+						responseData, _ := io.ReadAll(recorder.Body)
+						gotProduct := []Product{}
+						json.Unmarshal(responseData, &gotProduct)
+						if reflect.DeepEqual(gotProduct, test.body) {
+							t.Log(myfmt.ThumbsUp)
+						} else {
+							t.Errorf("\n%s Got: %v", myfmt.ThumbsDown, recorder.Body)
+						}
+					}
 				}
 			}
-			t.Log("And I get no available products")
-			{
-				responseData, _ := io.ReadAll(recorder.Body)
-				gotProduct := []Product{}
-				json.Unmarshal(responseData, &gotProduct)
-				if reflect.DeepEqual(gotProduct, []Product{}) {
-					t.Log(myfmt.ThumbsUp)
-				} else {
-					t.Errorf("\n%s Got: %v", myfmt.ThumbsDown, recorder.Body)
-				}
-			}
+			t.Run(test.name, tf)
 		}
 	}
 }
 
 func TestAddProduct(t *testing.T) {
+	invalidReqErr := errors.New(MissingRequired)
+	type testCase struct {
+		name        string
+		reqProduct  Product
+		respProduct Product
+		status      int
+		err         error
+	}
+	testCases := []testCase{
+		{name: "valid", reqProduct: sampleProducts[0], respProduct: sampleProducts[0], status: http.StatusCreated, err: nil},
+		{name: "empty product", reqProduct: Product{}, respProduct: Product{}, status: http.StatusBadRequest, err: invalidReqErr},
+		{name: "missing product name", reqProduct: Product{Name: "", RecipeID: "4"}, respProduct: Product{}, status: http.StatusBadRequest, err: invalidReqErr},
+		{name: "missing recipeID", reqProduct: Product{Name: "product name", RecipeID: ""}, respProduct: Product{}, status: http.StatusBadRequest, err: invalidReqErr},
+	}
 	t.Log("Given that I have the http server running")
 	{
-		t.Log("When I post a valid product")
-		{
-			setUpAddProductsTest()
-			jsonBody, _ := json.Marshal(&sampleProducts[0])
-			bodyReader := bytes.NewReader(jsonBody)
-			req, _ := http.NewRequest("POST", "/products", bodyReader)
-			mockProductService.On("Add").Return(sampleProducts[0], nil)
+		for i, test := range testCases {
+			tf := func(t *testing.T) {
+				t.Logf("Test: %d When I post a product that is %s", i, test.name)
+				{
+					setUpAddProductsTest()
+					jsonBody, _ := json.Marshal(&test.reqProduct)
+					bodyReader := bytes.NewReader(jsonBody)
+					req, _ := http.NewRequest("POST", "/products", bodyReader)
+					mockProductService.On("Add").Return(test.respProduct, test.err)
 
-			rtr = router.AddProduct(rtr, controller.Add)
-			rtr.ServeHTTP(recorder, req)
-			
-			t.Log("Then I get 204 status")
-			{
-				if recorder.Code == http.StatusCreated {
-					t.Log(myfmt.ThumbsUp)
+					rtr = router.AddProduct(rtr, controller.Add)
+					rtr.ServeHTTP(recorder, req)
 
-				} else {
-					t.Errorf("\n%s Got %v", myfmt.ThumbsDown, recorder.Code)
+					t.Logf("Then I get %d status", test.status)
+					{
+						if recorder.Code == test.status {
+							t.Log(myfmt.ThumbsUp)
+
+						} else {
+							t.Errorf("\n%s Got %v", myfmt.ThumbsDown, recorder.Code)
+						}
+					}
+					t.Logf("And %v is returned", test.respProduct)
+					{
+						responseData, _ := io.ReadAll(recorder.Body)
+						if (test.respProduct == Product{} && string(responseData) == `""`) {
+							t.Log(myfmt.ThumbsUp)
+						} else {
+							gotProduct := Product{}
+							err := json.Unmarshal(responseData, &gotProduct)
+							if err != nil {
+								t.Errorf("\n%s failed to deserialise the response: %v", myfmt.ThumbsDown, recorder.Body)
+							}
+							if reflect.DeepEqual(gotProduct, test.reqProduct) {
+								t.Log(myfmt.ThumbsUp)
+							} else {
+								t.Errorf("\n%s Got: %v", myfmt.ThumbsDown, recorder.Body)
+							}
+						}
+					}
 				}
 			}
-			t.Log("And sampleProduct[0] is returned")
-			{
-				responseData, _ := io.ReadAll(recorder.Body)
-				gotProduct := Product{}
-				json.Unmarshal(responseData, &gotProduct)
-				if reflect.DeepEqual(gotProduct, sampleProducts[0]) {
-					t.Log(myfmt.ThumbsUp)
-				} else {
-					t.Errorf("\n%s Got: %v", myfmt.ThumbsDown, recorder.Body)
-				}
-			}
+			t.Run(test.name, tf)
 		}
-		t.Log("When I post an invalid product")
-		{
-			setUpAddProductsTest()
-			invalid := Product{ Name: "", RecipeID: "1"}
-			jsonBody, _ := json.Marshal(&invalid)
-			bodyReader := bytes.NewReader(jsonBody)
-			req, _ := http.NewRequest("POST", "/products", bodyReader)
-			mockProductService.On("Add").Return(Product{}, errors.New(MissingRequired))
-			rtr = router.AddProduct(rtr, controller.Add)
 
-			rtr.ServeHTTP(recorder, req)
-
-			t.Log("Then I get 400 status")
-			{
-				if recorder.Code == http.StatusBadRequest {
-					t.Log(myfmt.ThumbsUp)
-
-				} else {
-					t.Errorf("\n%s Got %v", myfmt.ThumbsDown, recorder.Code)
-				}
-			}
-			t.Log("And nothing is returned")
-			{
-				responseData, _ := io.ReadAll(recorder.Body)
-				gotProduct := Product{}
-				json.Unmarshal(responseData, &gotProduct)
-				if reflect.DeepEqual(gotProduct, Product{}) {
-					t.Log(myfmt.ThumbsUp)
-				} else {
-					t.Errorf("\n%s Got: %v", myfmt.ThumbsDown, gotProduct)
-				}
-			}
-		}
 	}
 }
