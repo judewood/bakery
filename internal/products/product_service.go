@@ -58,7 +58,7 @@ func FormatProducts(products []Product) string {
 // isInvalid returns whether this is a valid product and error if it is not valid
 func isInvalid(product Product) (bool, error) {
 	if product.Name == "" || product.RecipeID == "" {
-		return true, errors.New("missing Required field")
+		return true, errors.New("missing required field")
 	}
 	return false, nil
 }
