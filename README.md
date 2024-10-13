@@ -33,6 +33,27 @@ In terminal you will see a random order being created and fulfilled
 Run `go test ./...` for short output
 Running `go test ./... -v` will show you more detail of passing tests
 
+### Run a single test
+
+Navigate to the folder containing the test file and run below , replacing TestName 
+`go test -run TestName -v`
+
+eg 
+```
+cd internal\products
+go test -run TestGetProducts -v
+```
+
+### Run a single sub-test
+Navigate to the folder containing the test file and run below, replacing the TestName and SubName
+`go test -run TestName/SubName`
+
+eg 
+```
+cd internal\products
+go test -run TestGetProducts/zero -v
+```
+
 ## Tools
 
 ### Postman

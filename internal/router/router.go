@@ -8,7 +8,7 @@ import (
 
 func SetupRouter() *gin.Engine {
 	r := gin.Default()
-	r.GET("/ping", Ping)
+	r.GET("/ping", pingServer)
 	return r
 }
 
@@ -24,7 +24,7 @@ func AddProduct(r *gin.Engine, handler gin.HandlerFunc) *gin.Engine {
 	return r
 }
 
-func Ping(c *gin.Context) {
+func pingServer(c *gin.Context) {
 	slog.Info("Added GET ping route")
 	c.String(200, "pong")
 }
