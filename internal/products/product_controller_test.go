@@ -56,9 +56,9 @@ func TestProductControllerGetAll(t *testing.T) {
 					t.Logf("Then I get %d status", test.status)
 					{
 						if recorder.Code == test.status {
-							t.Log(myfmt.ThumbsUp)
+							passed(t)
 						} else {
-							t.Errorf("\n%s Got  %v", myfmt.ThumbsDown, recorder.Code)
+							failed(t,recorder.Code)
 						}
 					}
 					t.Logf("And I get %v", test.body)
@@ -67,9 +67,9 @@ func TestProductControllerGetAll(t *testing.T) {
 						gotProduct := []Product{}
 						json.Unmarshal(responseData, &gotProduct)
 						if reflect.DeepEqual(gotProduct, test.body) {
-							t.Log(myfmt.ThumbsUp)
+							passed(t)
 						} else {
-							t.Errorf("\n%s Got: %v", myfmt.ThumbsDown, recorder.Body)
+							failed(t, recorder.Body)
 						}
 					}
 				}
@@ -111,27 +111,27 @@ func TestProductControllerGet(t *testing.T) {
 					t.Logf("Then I get %d status", test.status)
 					{
 						if recorder.Code == test.status {
-							t.Log(myfmt.ThumbsUp)
+							passed(t)
 
 						} else {
-							t.Errorf("\n%s Got %v", myfmt.ThumbsDown, recorder.Code)
+							failed(t, recorder.Code)
 						}
 					}
 					t.Logf("And %v is returned", test.respProduct)
 					{
 						responseData, _ := io.ReadAll(recorder.Body)
 						if (test.respProduct == Product{} && string(responseData) == `""` || len(responseData) == 0) {
-							t.Log(myfmt.ThumbsUp)
+							passed(t)
 						} else {
 							gotProduct := Product{}
 							err := json.Unmarshal(responseData, &gotProduct)
 							if err != nil {
-								t.Errorf("\n%s failed to deserialise the response: %v", myfmt.ThumbsDown, recorder.Body)
+								failed(t ,recorder.Body)
 							}
 							if reflect.DeepEqual(gotProduct, test.respProduct) {
-								t.Log(myfmt.ThumbsUp)
+								passed(t)
 							} else {
-								t.Errorf("\n%s Got: %v", myfmt.ThumbsDown, gotProduct)
+								failed(t, gotProduct)
 							}
 						}
 					}
@@ -176,27 +176,27 @@ func TestProductControllerAdd(t *testing.T) {
 					t.Logf("Then I get %d status", test.status)
 					{
 						if recorder.Code == test.status {
-							t.Log(myfmt.ThumbsUp)
+							passed(t)
 
 						} else {
-							t.Errorf("\n%s Got %v", myfmt.ThumbsDown, recorder.Code)
+							failed(t, recorder.Code)
 						}
 					}
 					t.Logf("And %v is returned", test.respProduct)
 					{
 						responseData, _ := io.ReadAll(recorder.Body)
 						if (test.respProduct == Product{} && string(responseData) == `""`) {
-							t.Log(myfmt.ThumbsUp)
+							passed(t)
 						} else {
 							gotProduct := Product{}
 							err := json.Unmarshal(responseData, &gotProduct)
 							if err != nil {
-								t.Errorf("\n%s failed to deserialise the response: %v", myfmt.ThumbsDown, recorder.Body)
+								failedToDeserialiseBody(t, recorder.Body)
 							}
 							if reflect.DeepEqual(gotProduct, test.reqProduct) {
-								t.Log(myfmt.ThumbsUp)
+								passed(t)
 							} else {
-								t.Errorf("\n%s Got: %v", myfmt.ThumbsDown, recorder.Body)
+								failed(t, recorder.Body)
 							}
 						}
 					}
@@ -240,27 +240,27 @@ func TestProductControllerUpdate(t *testing.T) {
 					t.Logf("Then I get %d status", test.status)
 					{
 						if recorder.Code == test.status {
-							t.Log(myfmt.ThumbsUp)
+							passed(t)
 
 						} else {
-							t.Errorf("\n%s Got %v", myfmt.ThumbsDown, recorder.Code)
+							failed(t, recorder.Code)
 						}
 					}
 					t.Logf("And %v is returned", test.respProduct)
 					{
 						responseData, _ := io.ReadAll(recorder.Body)
 						if (test.respProduct == Product{} && string(responseData) == `""`) {
-							t.Log(myfmt.ThumbsUp)
+							passed(t)
 						} else {
 							gotProduct := Product{}
 							err := json.Unmarshal(responseData, &gotProduct)
 							if err != nil {
-								t.Errorf("\n%s failed to deserialise the response: %v", myfmt.ThumbsDown, recorder.Body)
+								failedToDeserialiseBody(t, recorder.Body)
 							}
 							if reflect.DeepEqual(gotProduct, test.reqProduct) {
-								t.Log(myfmt.ThumbsUp)
+								passed(t)
 							} else {
-								t.Errorf("\n%s Got: %v", myfmt.ThumbsDown, recorder.Body)
+								failed(t, recorder.Body)
 							}
 						}
 					}
@@ -305,27 +305,27 @@ func TestProductControllerDelete(t *testing.T) {
 					t.Logf("Then I get %d status", test.status)
 					{
 						if recorder.Code == test.status {
-							t.Log(myfmt.ThumbsUp)
+							passed(t)
 
 						} else {
-							t.Errorf("\n%s Got %v", myfmt.ThumbsDown, recorder.Code)
+							failed(t, recorder.Code)
 						}
 					}
 					t.Logf("And %v is returned", test.respProduct)
 					{
 						responseData, _ := io.ReadAll(recorder.Body)
 						if (test.respProduct == Product{} && string(responseData) == `""` || len(responseData) == 0) {
-							t.Log(myfmt.ThumbsUp)
+							passed(t)
 						} else {
-							gotProduct := Product{}
-							err := json.Unmarshal(responseData, &gotProduct)
+							got := Product{}
+							err := json.Unmarshal(responseData, &got)
 							if err != nil {
-								t.Errorf("\n%s failed to deserialise the response: %v", myfmt.ThumbsDown, recorder.Body)
+								failedToDeserialiseBody(t, recorder.Body)
 							}
-							if reflect.DeepEqual(gotProduct, test.respProduct) {
-								t.Log(myfmt.ThumbsUp)
+							if reflect.DeepEqual(got, test.respProduct) {
+								passed(t)
 							} else {
-								t.Errorf("\n%s Got: %v", myfmt.ThumbsDown, gotProduct)
+								failed(t, got)
 							}
 						}
 					}
@@ -335,4 +335,16 @@ func TestProductControllerDelete(t *testing.T) {
 		}
 
 	}
+}
+
+func passed (t *testing.T) {
+	t.Log(myfmt.ThumbsUp)
+}
+
+func failed(t *testing.T, got any) {
+	t.Errorf("\n%s Got: %v", myfmt.ThumbsDown, got)
+}
+
+func failedToDeserialiseBody(t *testing.T, body any) {
+	t.Errorf("\n%s failed to deserialise the response: %v", myfmt.ThumbsDown, body)
 }

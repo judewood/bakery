@@ -39,28 +39,28 @@ func TestProductServiceGetAll(t *testing.T) {
 
 					productService := NewProductService(mockProductStore)
 
-					gotProducts, gotError := productService.GetAll()
+					got, gotError := productService.GetAll()
 					t.Logf("Then I get %v", test.want)
 					{
-						if reflect.DeepEqual(gotProducts, test.want) {
-							t.Log(myfmt.ThumbsUp)
+						if reflect.DeepEqual(got, test.want) {
+							passed(t)
 						} else {
-							myfmt.Errorf(t, "\n%s Got %v", myfmt.ThumbsDown, gotProducts)
+							failed(t, got)
 						}
 					}
 					t.Logf("Then I get error %v", test.err)
 					{
 						if test.err == nil {
 							if gotError == nil {
-								t.Log(myfmt.ThumbsUp)
+								passed(t)
 							} else {
-								t.Errorf("\n%s Got Error %v", myfmt.ThumbsDown, gotError.Error())
+								failed(t, gotError)
 							}
 						} else {
 							if gotError == nil {
-								t.Errorf("\n%s got no error ", myfmt.ThumbsDown)
+								failed(t, "no error")
 							} else {
-								t.Log(myfmt.ThumbsUp)
+								passed(t)
 							}
 						}
 					}
@@ -100,9 +100,9 @@ func TestProductServiceGet(t *testing.T) {
 					t.Logf("Then I get returned product: %#v", test.want)
 					{
 						if reflect.DeepEqual(got, test.want) {
-							t.Log(myfmt.ThumbsUp)
+							passed(t)
 						} else {
-							t.Errorf("\n%s Got %v", myfmt.ThumbsDown, got)
+							failed(t, got)
 						}
 					}
 					errStr := "an"
@@ -113,15 +113,15 @@ func TestProductServiceGet(t *testing.T) {
 					{
 						if test.err == nil {
 							if gotError == nil {
-								t.Log(myfmt.ThumbsUp)
+								passed(t)
 							} else {
-								t.Errorf("\n%s got %v", myfmt.ThumbsDown, gotError)
+								failed(t, gotError)
 							}
 						} else {
 							if gotError == nil {
-								t.Errorf("\n%s got ", myfmt.ThumbsDown)
+								failed(t, "no error")
 							} else {
-								t.Log(myfmt.ThumbsUp)
+								passed(t)
 							}
 						}
 					}
@@ -163,9 +163,9 @@ func TestProductServiceAdd(t *testing.T) {
 					t.Logf("Then I get returned product: %#v", test.want)
 					{
 						if reflect.DeepEqual(got, test.want) {
-							t.Log(myfmt.ThumbsUp)
+							passed(t)
 						} else {
-							t.Errorf("\n%s Got %v", myfmt.ThumbsDown, got)
+							failed(t, got)
 						}
 					}
 					errStr := "an"
@@ -176,15 +176,15 @@ func TestProductServiceAdd(t *testing.T) {
 					{
 						if test.err == nil {
 							if gotError == nil {
-								t.Log(myfmt.ThumbsUp)
+								passed(t)
 							} else {
-								t.Errorf("\n%s got %v", myfmt.ThumbsDown, gotError)
+								failed(t, gotError)
 							}
 						} else {
 							if gotError == nil {
-								t.Errorf("\n%s got ", myfmt.ThumbsDown)
+								failed(t, "")
 							} else {
-								t.Log(myfmt.ThumbsUp)
+								passed(t)
 							}
 						}
 					}
@@ -228,9 +228,9 @@ func TestProductServiceUpdate(t *testing.T) {
 					t.Logf("Then I get returned product: %#v", test.want)
 					{
 						if reflect.DeepEqual(got, test.want) {
-							t.Log(myfmt.ThumbsUp)
+							passed(t)
 						} else {
-							t.Errorf("\n%s Got %v", myfmt.ThumbsDown, got)
+							failed(t, got)
 						}
 					}
 					errStr := "an"
@@ -241,15 +241,15 @@ func TestProductServiceUpdate(t *testing.T) {
 					{
 						if test.err == nil {
 							if gotError == nil {
-								t.Log(myfmt.ThumbsUp)
+								passed(t)
 							} else {
-								t.Errorf("\n%s got %v", myfmt.ThumbsDown, gotError)
+								failed(t, gotError)
 							}
 						} else {
 							if gotError == nil {
-								t.Errorf("\n%s got ", myfmt.ThumbsDown)
+								failed(t, "no error")
 							} else {
-								t.Log(myfmt.ThumbsUp)
+								passed(t)
 							}
 						}
 					}
@@ -289,9 +289,9 @@ func TestProductServiceDelete(t *testing.T) {
 					t.Logf("Then I get returned product: %#v", test.want)
 					{
 						if reflect.DeepEqual(got, test.want) {
-							t.Log(myfmt.ThumbsUp)
+							passed(t)
 						} else {
-							t.Errorf("\n%s Got %v", myfmt.ThumbsDown, got)
+							failed(t, got)
 						}
 					}
 					errStr := "an"
@@ -302,15 +302,15 @@ func TestProductServiceDelete(t *testing.T) {
 					{
 						if test.err == nil {
 							if gotError == nil {
-								t.Log(myfmt.ThumbsUp)
+								passed(t)
 							} else {
-								t.Errorf("\n%s got %v", myfmt.ThumbsDown, gotError)
+								failed(t, gotError)
 							}
 						} else {
 							if gotError == nil {
-								t.Errorf("\n%s got ", myfmt.ThumbsDown)
+								failed(t, "no error")
 							} else {
-								t.Log(myfmt.ThumbsUp)
+								passed(t)
 							}
 						}
 					}
