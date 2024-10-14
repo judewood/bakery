@@ -20,6 +20,9 @@ func main() {
 	server := router.SetupRouter()
 	server = router.GetProducts(server, productController.GetProducts)
 	server = router.AddProduct(server, productController.Add)
+	server = router.GetProduct(server, productController.Get)
+	server = router.DeleteProduct(server, productController.Delete)
+	server = router.UpdateProduct(server, productController.Update)
 	server.Run(":8080")
 	slog.Debug("Server started")
 }

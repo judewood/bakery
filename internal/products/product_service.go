@@ -8,11 +8,15 @@ import (
 )
 
 const MissingRequired string = "missing required field"
+const MissingID = "missing id in request"
 
 // ProductServer provides a product service
 type ProductServer interface {
-	GetAvailableProducts() ([]Product, error)
+	GetAll() ([]Product, error)
+	Get(id string) (Product, error)
 	Add(product Product) (Product, error)
+	Update(product Product) (Product, error)
+	Delete(id string) (Product, error)
 }
 
 // ProductService applies business logic to bakery products
@@ -27,9 +31,9 @@ func NewProductService(productStore ProductStorer) *ProductService {
 	}
 }
 
-// GetAvailableProducts returns a slice of all the bakery's  products
-func (p *ProductService) GetAvailableProducts() ([]Product, error) {
-	availableProducts, err := p.productStore.GetAvailableProducts()
+// GetAll returns a slice of all the bakery's  products
+func (p *ProductService) GetAll() ([]Product, error) {
+	availableProducts, err := p.productStore.GetAll()
 	if err != nil {
 		return nil, err
 	}
@@ -38,15 +42,37 @@ func (p *ProductService) GetAvailableProducts() ([]Product, error) {
 
 }
 
+func (p *ProductService) Get(id string) (Product, error) {
+	slog.Debug("Get product by id", "id", id)
+	if len(id) < 2 {
+		return Product{}, errors.New(MissingID)
+	}
+	return p.productStore.Get(id)
+}
+
 // Add adds new product to store
 func (p *ProductService) Add(product Product) (Product, error) {
 	if isInvalid, err := isInvalid(product); isInvalid {
-		slog.Warn("failed to add product: %v. Error: %v", "Product", product, err)
+		slog.Warn("failed to add product", "Product", product, "Error", err)
 		return Product{}, err
 	}
-	added, err := p.productStore.AddProduct(product)
+	added, err := p.productStore.Add(product)
 	slog.Info("Added product", "Product", added)
 	return added, err
+}
+
+func (p *ProductService) Update(product Product) (Product, error) {
+	if isInvalid, err := isInvalid(product); isInvalid {
+		return Product{}, err
+	}
+	return p.productStore.Update(product)
+}
+
+func (p *ProductService) Delete(id string) (Product, error) {
+	if len(id) == 0 {
+		return Product{}, errors.New(MissingID)
+	}
+	return p.productStore.Delete(id)
 }
 
 // FormatProducts formats a slice of products for display
