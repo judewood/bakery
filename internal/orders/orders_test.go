@@ -41,7 +41,7 @@ func TestRandomOrder(t *testing.T) {
 
 	for _, testCase := range testCases {
 		mockProductStore := new(products.MockProductStore)
-		mockProductStore.On("GetAvailableProducts").Return(testCase.availProducts, testCase.availProductsErr)
+		mockProductStore.On("GetAll").Return(testCase.availProducts, testCase.availProductsErr)
 
 		mockRandom := random.NewMockRandom()
 		mockRandom.On("GetRandom", 5).Return(3)
@@ -66,7 +66,7 @@ func TestFormatOrder(t *testing.T) {
 	mockRandom.On("GetRandom", 5).Return(3)
 
 	mockProductStore := new(products.MockProductStore)
-	mockProductStore.On("GetAvailableProducts").Return(availableProducts, nil)
+	mockProductStore.On("GetAll").Return(availableProducts, nil)
 
 	order, _ := NewOrder(mockProductStore, mockRandom).RandomOrder()
 	want := "\n3 of Vanilla cake\n3 of plain cookie\n3 of Doughnut"

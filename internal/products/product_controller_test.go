@@ -4,10 +4,12 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"net/http"
 	"net/http/httptest"
 	"reflect"
+	"strings"
 	"testing"
 
 	"github.com/gin-gonic/gin"
@@ -34,11 +36,7 @@ func setUpGetProductsTest() {
 	rtr = router.GetProducts(rtr, controller.GetProducts)
 }
 
-func setUpAddProductsTest() {
-	setUp()
-}
-
-func TestGetProducts(t *testing.T) {
+func TestProductControllerGetAll(t *testing.T) {
 	testCases := []struct {
 		name   string
 		body   []Product
@@ -55,7 +53,7 @@ func TestGetProducts(t *testing.T) {
 				t.Logf("\n test %d: When I have %s products", i, test.name)
 				{
 					setUpGetProductsTest()
-					mockProductService.On("GetAvailableProducts").Return(test.body, nil)
+					mockProductService.On("GetAll").Return(test.body, nil)
 
 					rtr.ServeHTTP(recorder, req)
 
@@ -85,7 +83,72 @@ func TestGetProducts(t *testing.T) {
 	}
 }
 
-func TestAddProduct(t *testing.T) {
+func TestProductControllerGet(t *testing.T) {
+	invalidReqErr := errors.New(MissingID)
+	notFoundError := fmt.Errorf(NotFound, "missing")
+	type testCase struct {
+		name        string
+		reqId       string
+		respProduct Product
+		status      int
+		err         error
+	}
+	testCases := []testCase{
+
+		{name: "product exists", reqId: strings.ToLower(sampleProducts[2].Name), respProduct: sampleProducts[2], status: http.StatusOK, err: nil},
+		{name: "product does not exist", reqId: "missing", respProduct: Product{}, status: http.StatusNoContent, err: notFoundError},
+		{name: "requested id is invalid", reqId: "a", respProduct: Product{}, status: http.StatusBadRequest, err: invalidReqErr},
+	}
+	t.Log("Given that I have the http server running")
+	{
+		for i, test := range testCases {
+			tf := func(t *testing.T) {
+				t.Logf("Test: %d When the %s", i, test.name)
+				{
+					setUp()
+					req, _ := http.NewRequest("GET", "/product/"+test.reqId, nil)
+
+					mockProductService.On("Get").Return(test.respProduct, test.err)
+
+					rtr = router.GetProduct(rtr, controller.Get)
+					rtr.ServeHTTP(recorder, req)
+
+					t.Logf("Then I get %d status", test.status)
+					{
+						if recorder.Code == test.status {
+							t.Log(myfmt.ThumbsUp)
+
+						} else {
+							t.Errorf("\n%s Got %v", myfmt.ThumbsDown, recorder.Code)
+						}
+					}
+					t.Logf("And %v is returned", test.respProduct)
+					{
+						responseData, _ := io.ReadAll(recorder.Body)
+						if (test.respProduct == Product{} && string(responseData) == `""` || len(responseData) == 0) {
+							t.Log(myfmt.ThumbsUp)
+						} else {
+							gotProduct := Product{}
+							err := json.Unmarshal(responseData, &gotProduct)
+							if err != nil {
+								t.Errorf("\n%s failed to deserialise the response: %v", myfmt.ThumbsDown, recorder.Body)
+							}
+							if reflect.DeepEqual(gotProduct, test.respProduct) {
+								t.Log(myfmt.ThumbsUp)
+							} else {
+								t.Errorf("\n%s Got: %v", myfmt.ThumbsDown, gotProduct)
+							}
+						}
+					}
+				}
+			}
+			t.Run(test.name, tf)
+		}
+
+	}
+}
+
+func TestProductControllerAdd(t *testing.T) {
 	invalidReqErr := errors.New(MissingRequired)
 	type testCase struct {
 		name        string
@@ -106,10 +169,10 @@ func TestAddProduct(t *testing.T) {
 			tf := func(t *testing.T) {
 				t.Logf("Test: %d When I post a product that is %s", i, test.name)
 				{
-					setUpAddProductsTest()
+					setUp()
 					jsonBody, _ := json.Marshal(&test.reqProduct)
 					bodyReader := bytes.NewReader(jsonBody)
-					req, _ := http.NewRequest("POST", "/products", bodyReader)
+					req, _ := http.NewRequest("POST", "/product", bodyReader)
 					mockProductService.On("Add").Return(test.respProduct, test.err)
 
 					rtr = router.AddProduct(rtr, controller.Add)
@@ -139,6 +202,136 @@ func TestAddProduct(t *testing.T) {
 								t.Log(myfmt.ThumbsUp)
 							} else {
 								t.Errorf("\n%s Got: %v", myfmt.ThumbsDown, recorder.Body)
+							}
+						}
+					}
+				}
+			}
+			t.Run(test.name, tf)
+		}
+
+	}
+}
+
+func TestProductControllerUpdate(t *testing.T) {
+	invalidReqErr := errors.New(MissingRequired)
+	type testCase struct {
+		name        string
+		reqProduct  Product
+		respProduct Product
+		status      int
+		err         error
+	}
+	testCases := []testCase{
+		{name: "valid", reqProduct: sampleProducts[0], respProduct: sampleProducts[0], status: http.StatusOK, err: nil},
+		{name: "empty product", reqProduct: Product{}, respProduct: Product{}, status: http.StatusBadRequest, err: invalidReqErr},
+		{name: "missing product name", reqProduct: Product{Name: "", RecipeID: "4"}, respProduct: Product{}, status: http.StatusBadRequest, err: invalidReqErr},
+		{name: "missing recipeID", reqProduct: Product{Name: "product name", RecipeID: ""}, respProduct: Product{}, status: http.StatusBadRequest, err: invalidReqErr},
+	}
+	t.Log("Given that I have the http server running")
+	{
+		for i, test := range testCases {
+			tf := func(t *testing.T) {
+				t.Logf("Test: %d When I update a product that is %s", i, test.name)
+				{
+					setUp()
+					jsonBody, _ := json.Marshal(&test.reqProduct)
+					bodyReader := bytes.NewReader(jsonBody)
+					req, _ := http.NewRequest("PUT", "/product", bodyReader)
+					mockProductService.On("Update").Return(test.respProduct, test.err)
+
+					rtr = router.UpdateProduct(rtr, controller.Update)
+					rtr.ServeHTTP(recorder, req)
+
+					t.Logf("Then I get %d status", test.status)
+					{
+						if recorder.Code == test.status {
+							t.Log(myfmt.ThumbsUp)
+
+						} else {
+							t.Errorf("\n%s Got %v", myfmt.ThumbsDown, recorder.Code)
+						}
+					}
+					t.Logf("And %v is returned", test.respProduct)
+					{
+						responseData, _ := io.ReadAll(recorder.Body)
+						if (test.respProduct == Product{} && string(responseData) == `""`) {
+							t.Log(myfmt.ThumbsUp)
+						} else {
+							gotProduct := Product{}
+							err := json.Unmarshal(responseData, &gotProduct)
+							if err != nil {
+								t.Errorf("\n%s failed to deserialise the response: %v", myfmt.ThumbsDown, recorder.Body)
+							}
+							if reflect.DeepEqual(gotProduct, test.reqProduct) {
+								t.Log(myfmt.ThumbsUp)
+							} else {
+								t.Errorf("\n%s Got: %v", myfmt.ThumbsDown, recorder.Body)
+							}
+						}
+					}
+				}
+			}
+			t.Run(test.name, tf)
+		}
+
+	}
+}
+
+func TestProductControllerDelete(t *testing.T) {
+	invalidReqErr := errors.New(MissingID)
+	notFoundError := fmt.Errorf(NotFound, "missing")
+	type testCase struct {
+		name        string
+		reqId       string
+		respProduct Product
+		status      int
+		err         error
+	}
+	testCases := []testCase{
+
+		{name: "product exists", reqId: strings.ToLower(sampleProducts[2].Name), respProduct: sampleProducts[2], status: http.StatusOK, err: nil},
+		{name: "product does not exist", reqId: "missing", respProduct: Product{}, status: http.StatusNoContent, err: notFoundError},
+		{name: "requested id is invalid", reqId: "a", respProduct: Product{}, status: http.StatusBadRequest, err: invalidReqErr},
+	}
+	t.Log("Given that I want to delete a product")
+	{
+		for i, test := range testCases {
+			tf := func(t *testing.T) {
+				t.Logf("Test: %d When the %s", i, test.name)
+				{
+					setUp()
+					req, _ := http.NewRequest("DELETE", "/product/"+test.reqId, nil)
+
+					mockProductService.On("Delete").Return(test.respProduct, test.err)
+
+					rtr = router.DeleteProduct(rtr, controller.Delete)
+					rtr.ServeHTTP(recorder, req)
+
+					t.Logf("Then I get %d status", test.status)
+					{
+						if recorder.Code == test.status {
+							t.Log(myfmt.ThumbsUp)
+
+						} else {
+							t.Errorf("\n%s Got %v", myfmt.ThumbsDown, recorder.Code)
+						}
+					}
+					t.Logf("And %v is returned", test.respProduct)
+					{
+						responseData, _ := io.ReadAll(recorder.Body)
+						if (test.respProduct == Product{} && string(responseData) == `""` || len(responseData) == 0) {
+							t.Log(myfmt.ThumbsUp)
+						} else {
+							gotProduct := Product{}
+							err := json.Unmarshal(responseData, &gotProduct)
+							if err != nil {
+								t.Errorf("\n%s failed to deserialise the response: %v", myfmt.ThumbsDown, recorder.Body)
+							}
+							if reflect.DeepEqual(gotProduct, test.respProduct) {
+								t.Log(myfmt.ThumbsUp)
+							} else {
+								t.Errorf("\n%s Got: %v", myfmt.ThumbsDown, gotProduct)
 							}
 						}
 					}

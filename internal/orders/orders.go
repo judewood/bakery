@@ -32,7 +32,7 @@ func NewOrder(productStorer products.ProductStorer, random random.RandomProvider
 
 // RandomOrder generates a random order
 func (o *Order) RandomOrder() (Order, error) {
-	availableProducts, err := o.productStorer.GetAvailableProducts()
+	availableProducts, err := o.productStorer.GetAll()
 	if err != nil {
 		return Order{}, err
 	}

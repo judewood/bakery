@@ -7,17 +7,31 @@ import (
 )
 
 type MockProductStore struct {
-	mock.Mock 
+	mock.Mock
 }
 
-func (p *MockProductStore) GetAvailableProducts() ([]Product, error) {
-	fmt.Println("Mocked GetAvailableProducts")
+func (p *MockProductStore) GetAll() ([]Product, error) {
 	args := p.Called()
 	return args.Get(0).([]Product), args.Error(1)
 }
 
-func (p *MockProductStore) AddProduct(Product)(Product, error) {
-	fmt.Println("Mocked AddProduct")
+func (p *MockProductStore) Add(Product) (Product, error) {
+	fmt.Println("Mocked Add")
+	args := p.Called()
+	return args.Get(0).(Product), args.Error(1)
+}
+
+func (p *MockProductStore) Get(id string) (Product, error) {
+	args := p.Called()
+	return args.Get(0).(Product), args.Error(1)
+}
+
+func (p *MockProductStore) Delete(id string) (Product, error) {
+	args := p.Called()
+	return args.Get(0).(Product), args.Error(1)
+}
+
+func (p *MockProductStore) Update(product Product) (Product, error) {
 	args := p.Called()
 	return args.Get(0).(Product), args.Error(1)
 }
