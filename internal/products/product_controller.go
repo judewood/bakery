@@ -19,14 +19,9 @@ func NewProductController(productServer ProductServer) *ProductController {
 	}
 }
 
-func Ping(c *gin.Context) {
-	c.String(200, "pong")
-}
-
 func (p *ProductController) GetProducts(c *gin.Context) {
 	v, err := p.productService.GetAll()
 	if err != nil {
-		fmt.Printf("Failed to get available products %v", err)
 		c.IndentedJSON(http.StatusBadRequest, nil)
 		return
 	}
@@ -38,7 +33,6 @@ func (p *ProductController) GetProducts(c *gin.Context) {
 }
 
 func (p *ProductController) Get(ctx *gin.Context) {
-	slog.Info(fmt.Sprintln("context params", ctx.Params))
 	id := ctx.Param("id")
 	slog.Debug("Get by id request", "id", strings.ToLower(id))
 
@@ -63,7 +57,7 @@ func (p *ProductController) Add(ctx *gin.Context) {
 	product := Product{}
 	err := ctx.BindJSON(&product)
 	if err != nil {
-		fmt.Printf("\ngin says %v", err)
+		slog.Warn("error adding product", "error", err)
 		return
 	}
 	added, err := p.productService.Add(product)
@@ -82,7 +76,7 @@ func (p *ProductController) Update(ctx *gin.Context) {
 	product := Product{}
 	err := ctx.BindJSON(&product)
 	if err != nil {
-		fmt.Printf("\ngin says %v", err)
+		slog.Warn("error adding product", "error", err)
 		return
 	}
 	added, err := p.productService.Update(product)
@@ -102,7 +96,6 @@ func (p *ProductController) Update(ctx *gin.Context) {
 }
 
 func (p *ProductController) Delete(ctx *gin.Context) {
-	slog.Info(fmt.Sprintln("context params", ctx.Params))
 	id := ctx.Param("id")
 	slog.Debug("Delete by id request", "id", strings.ToLower(id))
 

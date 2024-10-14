@@ -42,6 +42,7 @@ func (p *ProductService) GetAll() ([]Product, error) {
 
 }
 
+// Get returns product with given id
 func (p *ProductService) Get(id string) (Product, error) {
 	slog.Debug("Get product by id", "id", id)
 	if len(id) < 2 {
@@ -61,6 +62,7 @@ func (p *ProductService) Add(product Product) (Product, error) {
 	return added, err
 }
 
+// Update overwrites existing product with given product
 func (p *ProductService) Update(product Product) (Product, error) {
 	if isInvalid, err := isInvalid(product); isInvalid {
 		return Product{}, err
@@ -68,6 +70,7 @@ func (p *ProductService) Update(product Product) (Product, error) {
 	return p.productStore.Update(product)
 }
 
+// Delete deletes an existing product
 func (p *ProductService) Delete(id string) (Product, error) {
 	if len(id) == 0 {
 		return Product{}, errors.New(MissingID)
