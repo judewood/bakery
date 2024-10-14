@@ -30,12 +30,6 @@ func setUp() {
 	controller = NewProductController(mockProductService)
 }
 
-func setUpGetProductsTest() {
-	setUp()
-	req, _ = http.NewRequest("GET", "/products", nil)
-	rtr = router.GetProducts(rtr, controller.GetProducts)
-}
-
 func TestProductControllerGetAll(t *testing.T) {
 	testCases := []struct {
 		name   string
@@ -52,7 +46,9 @@ func TestProductControllerGetAll(t *testing.T) {
 			tf := func(t *testing.T) {
 				t.Logf("\n test %d: When I have %s products", i, test.name)
 				{
-					setUpGetProductsTest()
+					setUp()
+					req, _ = http.NewRequest("GET", "/products", nil)
+					rtr = router.GetProducts(rtr, controller.GetProducts)
 					mockProductService.On("GetAll").Return(test.body, nil)
 
 					rtr.ServeHTTP(recorder, req)
@@ -94,7 +90,6 @@ func TestProductControllerGet(t *testing.T) {
 		err         error
 	}
 	testCases := []testCase{
-
 		{name: "product exists", reqId: strings.ToLower(sampleProducts[2].Name), respProduct: sampleProducts[2], status: http.StatusOK, err: nil},
 		{name: "product does not exist", reqId: "missing", respProduct: Product{}, status: http.StatusNoContent, err: notFoundError},
 		{name: "requested id is invalid", reqId: "a", respProduct: Product{}, status: http.StatusBadRequest, err: invalidReqErr},
@@ -209,7 +204,6 @@ func TestProductControllerAdd(t *testing.T) {
 			}
 			t.Run(test.name, tf)
 		}
-
 	}
 }
 

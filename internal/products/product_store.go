@@ -13,13 +13,14 @@ type Product struct {
 	RecipeID string `json:"recipeId"`
 }
 
+// Persistent store of products - will move to AWS store
 var products = []Product{
 	{Name: "Vanilla cakes", RecipeID: "1"},
 	{Name: "Plain cookies", RecipeID: "2"},
 	{Name: "Doughnuts", RecipeID: "3"},
 }
 
-// ProductStorer is something that can perform CRUD operations on stored products
+// ProductStorer is something that can perform CRUD operations on products
 type ProductStorer interface {
 	GetAll() ([]Product, error)
 	Add(product Product) (Product, error)
@@ -47,6 +48,23 @@ func (p *ProductStore) Get(id string) (Product, error) {
 	return Product{}, fmt.Errorf(NotFound, id)
 }
 
+// Add adds given product to the store if it is a valid product
+func (p *ProductStore) Add(product Product) (Product, error) {
+	products = append(products, product)
+	return product, nil
+}
+
+// Get returns matching product or empty product if not found
+func (p *ProductStore) Update(product Product) (Product, error) {
+	for i, v := range products {
+		if v.Name == product.Name {
+			products[i] = product
+			return product, nil
+		}
+	}
+	return Product{}, fmt.Errorf(NotFound, product.Name)
+}
+
 // Delete deletes and returns matching product or empty product if not found
 func (p *ProductStore) Delete(id string) (Product, error) {
 	for i, v := range products {
@@ -63,18 +81,3 @@ func (p *ProductStore) Delete(id string) (Product, error) {
 	return Product{}, fmt.Errorf(NotFound, id)
 }
 
-// Get returns matching product or empty product if not found
-func (p *ProductStore) Update(product Product) (Product, error) {
-	for i, v := range products {
-		if v.Name == product.Name {
-			products[i] = product
-			return product, nil
-		}
-	}
-	return Product{}, fmt.Errorf(NotFound, product.Name)
-}
-
-func (p *ProductStore) Add(product Product) (Product, error) {
-	products = append(products, product)
-	return product, nil
-}
