@@ -41,7 +41,7 @@ Navigate to the folder containing the test file and run below , replacing TestNa
 eg 
 ```
 cd internal\products
-go test -run TestGetProducts -v
+go test -run TestProductControllerGetAll -v
 ```
 
 ### Run a single sub-test
@@ -51,8 +51,19 @@ Navigate to the folder containing the test file and run below, replacing the Tes
 eg 
 ```
 cd internal\products
-go test -run TestGetProducts/zero -v
+go test -run TestProductControllerGetAll/zero -v
 ```
+### Test Coverage
+
+Create an output file with command below:
+```
+go test -coverprofile c.out ./...
+```
+then **open bash terminal** (don't use VSCode terminal in Windows) and enter command
+```
+go tool cover -html=c.out  
+```
+it should open a tab in your browser and you can use the drop down to  see color coded coverage for each file
 
 ## Tools
 

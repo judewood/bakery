@@ -67,12 +67,16 @@ func (p *ProductService) Update(product Product) (Product, error) {
 	if isInvalid, err := isInvalid(product); isInvalid {
 		return Product{}, err
 	}
-	return p.productStore.Update(product)
+	product, err := p.productStore.Update(product)
+	if err != nil {
+		return Product{}, err
+	}
+	return product, nil
 }
 
 // Delete deletes an existing product
 func (p *ProductService) Delete(id string) (Product, error) {
-	if len(id) == 0 {
+	if len(id) < 2 {
 		return Product{}, errors.New(MissingID)
 	}
 	return p.productStore.Delete(id)

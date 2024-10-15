@@ -45,7 +45,7 @@ func (p *ProductStore) Get(id string) (Product, error) {
 			return v, nil
 		}
 	}
-	return Product{}, fmt.Errorf(NotFound, id)
+	return Product{}, notFoundError(id)
 }
 
 // Add adds given product to the store if it is a valid product
@@ -62,7 +62,7 @@ func (p *ProductStore) Update(product Product) (Product, error) {
 			return product, nil
 		}
 	}
-	return Product{}, fmt.Errorf(NotFound, product.Name)
+	return Product{}, notFoundError(product.Name)
 }
 
 // Delete deletes and returns matching product or empty product if not found
@@ -78,6 +78,10 @@ func (p *ProductStore) Delete(id string) (Product, error) {
 		}
 
 	}
-	return Product{}, fmt.Errorf(NotFound, id)
+	return Product{}, notFoundError(id)
+}
+
+func notFoundError(s string) error{
+	return fmt.Errorf(NotFound, s)
 }
 

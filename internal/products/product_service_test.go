@@ -79,9 +79,9 @@ func TestProductServiceGet(t *testing.T) {
 		err   error
 	}
 
-	mockError := errors.New("Mocked error")
 	testCases := []testCase{
-		{name: "empty", input: "invalid", want: Product{}, err: mockError},
+		{name: "missing", input: "invalid", want: Product{}, err: notFoundError("missing")},
+		{name: "invalid id", input: "x", want: Product{}, err: errorMissingID},
 		{name: "valid", input: "Vanilla cake", want: sampleProducts[0], err: nil},
 	}
 
@@ -210,6 +210,7 @@ func TestProductServiceUpdate(t *testing.T) {
 		{name: "empty", input: Product{}, want: Product{}, err: mockError},
 		{name: "missing recipe id", input: Product{Name: "productName", RecipeID: ""}, want: Product{}, err: mockError},
 		{name: "missing product name", input: Product{Name: "", RecipeID: "RecipeId"}, want: Product{}, err: mockError},
+		{name: "missing", input: updatedProduct, want: Product{}, err: notFoundError("missing")},
 		{name: "valid", input: updatedProduct, want: updatedProduct, err: nil},
 	}
 
@@ -220,11 +221,11 @@ func TestProductServiceUpdate(t *testing.T) {
 				t.Logf("\n test %d: When I try to update a product that is %s", i, test.name)
 				{
 					mockProductStore := new(MockProductStore)
-					mockProductStore.On("Add").Return(test.input, test.err)
+					mockProductStore.On("Update").Return(test.input, test.err)
 
 					productService := NewProductService(mockProductStore)
 
-					got, gotError := productService.Add(test.input)
+					got, gotError := productService.Update(test.input)
 					t.Logf("Then I get returned product: %#v", test.want)
 					{
 						if reflect.DeepEqual(got, test.want) {
@@ -268,9 +269,9 @@ func TestProductServiceDelete(t *testing.T) {
 		err   error
 	}
 
-	mockError := errors.New("Mocked error")
 	testCases := []testCase{
-		{name: "does not exist", input: "invalid", want: Product{}, err: mockError},
+		{name: "does not exist", input: "missing", want: Product{}, err: notFoundError("missing")},
+		{name: "invalid id", input: "x", want: Product{}, err: errorMissingID},
 		{name: "exists", input: "Vanilla cake", want: sampleProducts[0], err: nil},
 	}
 
