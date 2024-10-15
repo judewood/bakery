@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
-	"strings"
 
 	"github.com/gin-gonic/gin"
 )
@@ -20,6 +19,7 @@ func NewProductController(productServer ProductServer) *ProductController {
 }
 
 func (p *ProductController) GetProducts(c *gin.Context) {
+	slog.Debug("Get all products request")
 	v, err := p.productService.GetAll()
 	if err != nil {
 		c.IndentedJSON(http.StatusBadRequest, nil)
@@ -34,7 +34,7 @@ func (p *ProductController) GetProducts(c *gin.Context) {
 
 func (p *ProductController) Get(ctx *gin.Context) {
 	id := ctx.Param("id")
-	slog.Debug("Get by id request", "id", strings.ToLower(id))
+	slog.Debug("Get product by id request", "id", id)
 
 	product, err := p.productService.Get(id)
 
@@ -57,9 +57,11 @@ func (p *ProductController) Add(ctx *gin.Context) {
 	product := Product{}
 	err := ctx.BindJSON(&product)
 	if err != nil {
-		slog.Warn("error adding product", "error", err)
+		slog.Warn("invalid product add", "error", err)
+		ctx.JSON(http.StatusBadRequest, "")
 		return
 	}
+	slog.Debug("Add product request", "product", product)
 	added, err := p.productService.Add(product)
 	if err != nil {
 		if err.Error() == MissingRequired {
@@ -76,16 +78,18 @@ func (p *ProductController) Update(ctx *gin.Context) {
 	product := Product{}
 	err := ctx.BindJSON(&product)
 	if err != nil {
-		slog.Warn("error adding product", "error", err)
+		slog.Warn("invalid product update", "error", err)
+		ctx.JSON(http.StatusBadRequest, "")
 		return
 	}
+	slog.Debug("Update product request", "product", product)
 	added, err := p.productService.Update(product)
 	if err != nil {
 		if err.Error() == MissingRequired {
 			ctx.JSON(http.StatusBadRequest, "")
 			return
 		}
-		if err.Error() == fmt.Sprintf(NotFound, product.Name) {
+		if err.Error() == notFoundError(product.Name).Error() {
 			ctx.JSON(http.StatusNoContent, "")
 			return
 		}
@@ -97,7 +101,7 @@ func (p *ProductController) Update(ctx *gin.Context) {
 
 func (p *ProductController) Delete(ctx *gin.Context) {
 	id := ctx.Param("id")
-	slog.Debug("Delete by id request", "id", strings.ToLower(id))
+	slog.Debug("Delete by id request", "id", id)
 
 	product, err := p.productService.Delete(id)
 
@@ -106,7 +110,7 @@ func (p *ProductController) Delete(ctx *gin.Context) {
 			ctx.JSON(http.StatusBadRequest, "")
 			return
 		}
-		if err.Error() == fmt.Sprintf(NotFound, id) {
+		if err.Error() == notFoundError(id).Error() {
 			ctx.JSON(http.StatusNoContent, "")
 			return
 		}
