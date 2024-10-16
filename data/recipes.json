@@ -1,0 +1,63 @@
+{
+  "1": {
+    "name": "cake",
+    "id": "1",
+    "ingredients": [
+      {
+        "name": "flour",
+        "quantity": 400
+      },
+      {
+        "name": "butter",
+        "quantity": 200
+      },
+      {
+        "name": "eggs",
+        "quantity": 4
+      },
+      {
+        "name": "sugar",
+        "quantity": 200
+      }
+    ],
+    "bakeTime": 3
+  },
+  "2": {
+    "name": "cookie",
+    "id": "2",
+    "ingredients": [
+      {
+        "name": "flour",
+        "quantity": 300
+      },
+      {
+        "name": "butter",
+        "quantity": 200
+      },
+      {
+        "name": "sugar",
+        "quantity": 200
+      }
+    ],
+    "bakeTime": 1
+  },
+  "3": {
+    "name": "doughnut",
+    "id": "3",
+    "ingredients": [
+      {
+        "name": "flour",
+        "quantity": 500
+      },
+      {
+        "name": "sugar",
+        "quantity": 300
+      },
+      {
+        "name": "yeast",
+        "quantity": 1
+      }
+    ],
+    "bakeTime": 2
+  }
+}
