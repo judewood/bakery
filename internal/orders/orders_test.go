@@ -5,8 +5,8 @@ import (
 	"testing"
 
 	"github.com/judewood/bakery/internal/products"
-	"github.com/judewood/bakery/myfmt"
 	"github.com/judewood/bakery/random"
+	"github.com/judewood/bakery/testutils"
 )
 
 var availableProducts = []products.Product{
@@ -25,55 +25,69 @@ func TestRandomOrder(t *testing.T) {
 
 	type testCase struct {
 		wantItems        []ProductQuantity
-		wantError        error
 		availProducts    []products.Product
 		availProductsErr error
 	}
 
 	testCases := []testCase{
-		{
-			wantItems:        wantedItems,
-			wantError:        nil,
-			availProducts:    availableProducts,
-			availProductsErr: nil,
-		},
-	}
+		{wantItems: wantedItems, availProducts: availableProducts, availProductsErr: nil}}
 
 	for _, testCase := range testCases {
-		mockProductStore := new(products.MockProductStore)
-		mockProductStore.On("GetAll").Return(testCase.availProducts, testCase.availProductsErr)
+		t.Log("Given I want to create a order containing random products")
+		{
+			mockProductStore := new(products.MockProductStore)
+			mockProductStore.On("GetAll").Return(testCase.availProducts, testCase.availProductsErr)
 
-		mockRandom := random.NewMockRandom()
-		mockRandom.On("GetRandom", 5).Return(3)
+			mockRandom := random.NewMockRandom()
+			mockRandom.On("GetRandom", 5).Return(3)
 
-		order, gotError := NewOrder(mockProductStore, mockRandom).RandomOrder()
-
-		if !reflect.DeepEqual(testCase.wantItems, order.Items) {
-			myfmt.Errorf(t, "Failed TestRandomOrder. \nWanted %v\nGot %v", wantedItems, order.Items)
+			t.Log("When I request an order")
+			{
+				order, gotError := NewOrder(mockProductStore, mockRandom).RandomOrder()
+				t.Logf("Then I should get expected order :%v", wantedItems)
+				{
+					if reflect.DeepEqual(testCase.wantItems, order.Items) {
+						testutils.Passed(t)
+					} else {
+						testutils.Failed(t, order.Items)
+					}
+				}
+				t.Log("and no error should be returned")
+				{
+					if gotError == nil {
+						testutils.Passed(t)
+					} else {
+						testutils.Failed(t, gotError)
+					}
+				}
+			}
 		}
-		if testCase.wantError == nil && gotError != nil {
-			myfmt.Errorf(t, "Failed TestRandomOrder.\nGot Error %v", gotError.Error())
-		}
-		if testCase.wantError != nil && gotError == nil {
-			myfmt.Errorf(t, "Failed TestRandomOrder.\nExpected Error %v", testCase.wantError)
-		}
-		t.Log()
 	}
 }
 
 func TestFormatOrder(t *testing.T) {
-	mockRandom := random.NewMockRandom()
-	mockRandom.On("GetRandom", 5).Return(3)
+	t.Log("Given I have an order")
+	{
+		mockRandom := random.NewMockRandom()
+		mockRandom.On("GetRandom", 5).Return(3)
 
-	mockProductStore := new(products.MockProductStore)
-	mockProductStore.On("GetAll").Return(availableProducts, nil)
+		mockProductStore := new(products.MockProductStore)
+		mockProductStore.On("GetAll").Return(availableProducts, nil)
 
-	order, _ := NewOrder(mockProductStore, mockRandom).RandomOrder()
-	want := "\n3 of Vanilla cake\n3 of plain cookie\n3 of Doughnut"
-	got := order.FormatOrder()
+		order, _ := NewOrder(mockProductStore, mockRandom).RandomOrder()
+		want := "\n3 of Vanilla cake\n3 of plain cookie\n3 of Doughnut"
 
-	if got != want {
-		t.Errorf("Failed TestFormatOrder. \nWanted:\n *%v*\nGot:\n *%v*", want, got)
+		t.Log("When the order is formatted")
+		{
+			got := order.FormatOrder()
+			t.Logf("The formatted order should be :%s", want )
+			{
+				if got == want {
+					testutils.Passed(t)
+				} else {
+					testutils.Failed(t, got)
+				}
+			}
+		}
 	}
-
 }

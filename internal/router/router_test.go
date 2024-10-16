@@ -6,7 +6,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/judewood/bakery/myfmt"
+	"github.com/judewood/bakery/testutils"
 )
 
 func TestPingRoute(t *testing.T) {
@@ -20,17 +20,22 @@ func TestPingRoute(t *testing.T) {
 			req, _ := http.NewRequest("GET", "/ping", nil)
 			router.ServeHTTP(w, req)
 
-			t.Log("Then I get response of 'pong'")
+			t.Log("Then I get 200 status code returned")
 			{
-				if w.Code != http.StatusOK {
-					t.Errorf("%sUnexpected http status.\nWant:\t%v\nGot:\t%v", myfmt.ThumbsDown,http.StatusOK, w.Code)
+				if w.Code == http.StatusOK {
+					testutils.Passed(t)
+				} else {
+					testutils.Failed(t, w.Code)
 				}
-				respBytes, err := io.ReadAll(w.Body)
-				if err != nil {
-					t.Errorf( "%sFailed to read response body bytes. %v",myfmt.ThumbsDown, err)
-				}
-				if string(respBytes) != "pong" {
-					t.Errorf( "%sUnexpected response body.\nWant:\t%s\nGot:\t%s", myfmt.ThumbsDown, "pong", string(respBytes))
+				t.Log("And I get response of 'pong'")
+				{
+					respBytes, err := io.ReadAll(w.Body)
+					if err != nil {
+						testutils.FailedToReadResponse(t,err)
+					}
+					if string(respBytes) != "pong" {
+						testutils.Failed(t,string(respBytes))
+					}
 				}
 			}
 		}

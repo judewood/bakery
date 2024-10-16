@@ -5,7 +5,8 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/judewood/bakery/myfmt"
+	"github.com/judewood/bakery/errorutils"
+	"github.com/judewood/bakery/testutils"
 )
 
 var sampleProducts = []Product{
@@ -43,24 +44,24 @@ func TestProductServiceGetAll(t *testing.T) {
 					t.Logf("Then I get %v", test.want)
 					{
 						if reflect.DeepEqual(got, test.want) {
-							passed(t)
+							testutils.Passed(t)
 						} else {
-							failed(t, got)
+							testutils.Failed(t, got)
 						}
 					}
 					t.Logf("Then I get error %v", test.err)
 					{
 						if test.err == nil {
 							if gotError == nil {
-								passed(t)
+								testutils.Passed(t)
 							} else {
-								failed(t, gotError)
+								testutils.Failed(t, gotError)
 							}
 						} else {
 							if gotError == nil {
-								failed(t, "no error")
+								testutils.Failed(t, "no error")
 							} else {
-								passed(t)
+								testutils.Passed(t)
 							}
 						}
 					}
@@ -80,8 +81,8 @@ func TestProductServiceGet(t *testing.T) {
 	}
 
 	testCases := []testCase{
-		{name: "missing", input: "invalid", want: Product{}, err: notFoundError("missing")},
-		{name: "invalid id", input: "x", want: Product{}, err: errorMissingID},
+		{name: "missing", input: "invalid", want: Product{}, err: errorutils.NotFoundError("missing")},
+		{name: "invalid id", input: "x", want: Product{}, err: errorutils.ErrorMissingID},
 		{name: "valid", input: "Vanilla cake", want: sampleProducts[0], err: nil},
 	}
 
@@ -100,9 +101,9 @@ func TestProductServiceGet(t *testing.T) {
 					t.Logf("Then I get returned product: %#v", test.want)
 					{
 						if reflect.DeepEqual(got, test.want) {
-							passed(t)
+							testutils.Passed(t)
 						} else {
-							failed(t, got)
+							testutils.Failed(t, got)
 						}
 					}
 					errStr := "an"
@@ -113,15 +114,15 @@ func TestProductServiceGet(t *testing.T) {
 					{
 						if test.err == nil {
 							if gotError == nil {
-								passed(t)
+								testutils.Passed(t)
 							} else {
-								failed(t, gotError)
+								testutils.Failed(t, gotError)
 							}
 						} else {
 							if gotError == nil {
-								failed(t, "no error")
+								testutils.Failed(t, "no error")
 							} else {
-								passed(t)
+								testutils.Passed(t)
 							}
 						}
 					}
@@ -163,9 +164,9 @@ func TestProductServiceAdd(t *testing.T) {
 					t.Logf("Then I get returned product: %#v", test.want)
 					{
 						if reflect.DeepEqual(got, test.want) {
-							passed(t)
+							testutils.Passed(t)
 						} else {
-							failed(t, got)
+							testutils.Failed(t, got)
 						}
 					}
 					errStr := "an"
@@ -176,15 +177,15 @@ func TestProductServiceAdd(t *testing.T) {
 					{
 						if test.err == nil {
 							if gotError == nil {
-								passed(t)
+								testutils.Passed(t)
 							} else {
-								failed(t, gotError)
+								testutils.Failed(t, gotError)
 							}
 						} else {
 							if gotError == nil {
-								failed(t, "")
+								testutils.Failed(t, "")
 							} else {
-								passed(t)
+								testutils.Passed(t)
 							}
 						}
 					}
@@ -210,7 +211,7 @@ func TestProductServiceUpdate(t *testing.T) {
 		{name: "empty", input: Product{}, want: Product{}, err: mockError},
 		{name: "missing recipe id", input: Product{Name: "productName", RecipeID: ""}, want: Product{}, err: mockError},
 		{name: "missing product name", input: Product{Name: "", RecipeID: "RecipeId"}, want: Product{}, err: mockError},
-		{name: "missing", input: updatedProduct, want: Product{}, err: notFoundError("missing")},
+		{name: "missing", input: updatedProduct, want: Product{}, err: errorutils.NotFoundError("missing")},
 		{name: "valid", input: updatedProduct, want: updatedProduct, err: nil},
 	}
 
@@ -229,9 +230,9 @@ func TestProductServiceUpdate(t *testing.T) {
 					t.Logf("Then I get returned product: %#v", test.want)
 					{
 						if reflect.DeepEqual(got, test.want) {
-							passed(t)
+							testutils.Passed(t)
 						} else {
-							failed(t, got)
+							testutils.Failed(t, got)
 						}
 					}
 					errStr := "an"
@@ -242,15 +243,15 @@ func TestProductServiceUpdate(t *testing.T) {
 					{
 						if test.err == nil {
 							if gotError == nil {
-								passed(t)
+								testutils.Passed(t)
 							} else {
-								failed(t, gotError)
+								testutils.Failed(t, gotError)
 							}
 						} else {
 							if gotError == nil {
-								failed(t, "no error")
+								testutils.Failed(t, "no error")
 							} else {
-								passed(t)
+								testutils.Passed(t)
 							}
 						}
 					}
@@ -270,8 +271,8 @@ func TestProductServiceDelete(t *testing.T) {
 	}
 
 	testCases := []testCase{
-		{name: "does not exist", input: "missing", want: Product{}, err: notFoundError("missing")},
-		{name: "invalid id", input: "x", want: Product{}, err: errorMissingID},
+		{name: "does not exist", input: "missing", want: Product{}, err: errorutils.NotFoundError("missing")},
+		{name: "invalid id", input: "x", want: Product{}, err: errorutils.ErrorMissingID},
 		{name: "exists", input: "Vanilla cake", want: sampleProducts[0], err: nil},
 	}
 
@@ -290,9 +291,9 @@ func TestProductServiceDelete(t *testing.T) {
 					t.Logf("Then I get returned product: %#v", test.want)
 					{
 						if reflect.DeepEqual(got, test.want) {
-							passed(t)
+							testutils.Passed(t)
 						} else {
-							failed(t, got)
+							testutils.Failed(t, got)
 						}
 					}
 					errStr := "an"
@@ -303,15 +304,15 @@ func TestProductServiceDelete(t *testing.T) {
 					{
 						if test.err == nil {
 							if gotError == nil {
-								passed(t)
+								testutils.Passed(t)
 							} else {
-								failed(t, gotError)
+								testutils.Failed(t, gotError)
 							}
 						} else {
 							if gotError == nil {
-								failed(t, "no error")
+								testutils.Failed(t, "no error")
 							} else {
-								passed(t)
+								testutils.Passed(t)
 							}
 						}
 					}
@@ -323,11 +324,18 @@ func TestProductServiceDelete(t *testing.T) {
 }
 
 func TestFormatProducts(t *testing.T) {
-	want := "We have available:\n Vanilla cake\n plain cookie\n Doughnut\n"
+	t.Log("Given I want to format the product output")
+	{
+		want := "We have available:\n Vanilla cake\n plain cookie\n Doughnut\n"
 
-	got := FormatProducts(sampleProducts)
-
-	if got != want {
-		myfmt.Errorf(t, "Failed TestFormatProducts. \nWanted:\n *%v*\nGot:\n *%v*", want, got)
+		got := FormatProducts(sampleProducts)
+		t.Log("Then formatted products should be returned ")
+		{
+			if got == want {
+				testutils.Passed(t)
+			} else {
+				testutils.Failed(t, got)
+			}
+		}
 	}
 }

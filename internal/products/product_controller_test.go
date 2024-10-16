@@ -3,7 +3,6 @@ package products
 import (
 	"bytes"
 	"encoding/json"
-	"errors"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -12,8 +11,9 @@ import (
 	"testing"
 
 	"github.com/gin-gonic/gin"
+	"github.com/judewood/bakery/errorutils"
 	"github.com/judewood/bakery/internal/router"
-	"github.com/judewood/bakery/myfmt"
+	"github.com/judewood/bakery/testutils"
 )
 
 var recorder *httptest.ResponseRecorder
@@ -21,9 +21,6 @@ var rtr *gin.Engine
 var mockProductService *MockProductService
 var controller *ProductController
 var req *http.Request
-
-var errorMissingID = errors.New(MissingID)
-var errorMissingRequiredField = errors.New(MissingRequired)
 
 func setUp() {
 	rtr = router.SetupRouter()
@@ -58,9 +55,9 @@ func TestProductControllerGetAll(t *testing.T) {
 					t.Logf("Then I get %d status", test.status)
 					{
 						if recorder.Code == test.status {
-							passed(t)
+							testutils.Passed(t)
 						} else {
-							failed(t, recorder.Code)
+							testutils.Failed(t, recorder.Code)
 						}
 					}
 					t.Logf("And I get %v", test.body)
@@ -69,9 +66,9 @@ func TestProductControllerGetAll(t *testing.T) {
 						gotProduct := []Product{}
 						json.Unmarshal(responseData, &gotProduct)
 						if reflect.DeepEqual(gotProduct, test.body) {
-							passed(t)
+							testutils.Passed(t)
 						} else {
-							failed(t, recorder.Body)
+							testutils.Failed(t, recorder.Body)
 						}
 					}
 				}
@@ -91,8 +88,8 @@ func TestProductControllerGet(t *testing.T) {
 	}
 	testCases := []testCase{
 		{name: "product exists", reqId: strings.ToLower(sampleProducts[2].Name), respProduct: sampleProducts[2], status: http.StatusOK, err: nil},
-		{name: "product does not exist", reqId: "missing", respProduct: Product{}, status: http.StatusNoContent, err: notFoundError("missing")},
-		{name: "requested id is invalid", reqId: "a", respProduct: Product{}, status: http.StatusBadRequest, err: errorMissingID},
+		{name: "product does not exist", reqId: "missing", respProduct: Product{}, status: http.StatusNoContent, err: errorutils.NotFoundError("missing")},
+		{name: "requested id is invalid", reqId: "a", respProduct: Product{}, status: http.StatusBadRequest, err: errorutils.ErrorMissingID},
 	}
 	t.Log("Given that I have the http server running")
 	{
@@ -111,27 +108,27 @@ func TestProductControllerGet(t *testing.T) {
 					t.Logf("Then I get %d status", test.status)
 					{
 						if recorder.Code == test.status {
-							passed(t)
+							testutils.Passed(t)
 
 						} else {
-							failed(t, recorder.Code)
+							testutils.Failed(t, recorder.Code)
 						}
 					}
 					t.Logf("And %v is returned", test.respProduct)
 					{
 						responseData, _ := io.ReadAll(recorder.Body)
 						if test.err != nil && (string(responseData) == `""` || string(responseData) == "") {
-							passed(t)
+							testutils.Passed(t)
 						} else {
 							gotProduct := Product{}
 							err := json.Unmarshal(responseData, &gotProduct)
 							if err != nil {
-								failed(t, recorder.Body)
+								testutils.Failed(t, recorder.Body)
 							}
 							if reflect.DeepEqual(gotProduct, test.respProduct) {
-								passed(t)
+								testutils.Passed(t)
 							} else {
-								failed(t, gotProduct)
+								testutils.Failed(t, gotProduct)
 							}
 						}
 					}
@@ -153,10 +150,10 @@ func TestProductControllerAdd(t *testing.T) {
 	}
 	testCases := []testCase{
 		{name: "valid", reqBody: sampleProducts[0], respBody: sampleProducts[0], status: http.StatusCreated, err: nil},
-		{name: "empty product", reqBody: Product{}, respBody: Product{}, status: http.StatusBadRequest, err: errorMissingRequiredField},
-		{name: "missing product name", reqBody: Product{Name: "", RecipeID: "4"}, respBody: Product{}, status: http.StatusBadRequest, err: errorMissingRequiredField},
-		{name: "missing recipeID", reqBody: Product{Name: "product name", RecipeID: ""}, respBody: Product{}, status: http.StatusBadRequest, err: errorMissingRequiredField},
-		{name: "not a product", reqBody: "Not a product", respBody: Product{}, status: http.StatusBadRequest, err: errorMissingRequiredField},
+		{name: "empty product", reqBody: Product{}, respBody: Product{}, status: http.StatusBadRequest, err: errorutils.ErrorMissingRequired},
+		{name: "missing product name", reqBody: Product{Name: "", RecipeID: "4"}, respBody: Product{}, status: http.StatusBadRequest, err: errorutils.ErrorMissingRequired},
+		{name: "missing recipeID", reqBody: Product{Name: "product name", RecipeID: ""}, respBody: Product{}, status: http.StatusBadRequest, err: errorutils.ErrorMissingRequired},
+		{name: "not a product", reqBody: "Not a product", respBody: Product{}, status: http.StatusBadRequest, err: errorutils.ErrorMissingRequired},
 	}
 	t.Log("Given that I have the http server running")
 	{
@@ -176,27 +173,27 @@ func TestProductControllerAdd(t *testing.T) {
 					t.Logf("Then I get %d status", test.status)
 					{
 						if recorder.Code == test.status {
-							passed(t)
+							testutils.Passed(t)
 
 						} else {
-							failed(t, recorder.Code)
+							testutils.Failed(t, recorder.Code)
 						}
 					}
 					t.Logf("And %v is returned", test.respBody)
 					{
 						responseData, _ := io.ReadAll(recorder.Body)
 						if (test.respBody == Product{} && string(responseData) == `""`) {
-							passed(t)
+							testutils.Passed(t)
 						} else {
 							gotProduct := Product{}
 							err := json.Unmarshal(responseData, &gotProduct)
 							if err != nil {
-								failedToDeserialiseBody(t, recorder.Body)
+								testutils.FailedToDeserialise(t, recorder.Body)
 							}
 							if reflect.DeepEqual(gotProduct, test.reqBody) {
-								passed(t)
+								testutils.Passed(t)
 							} else {
-								failed(t, recorder.Body)
+								testutils.Failed(t, recorder.Body)
 							}
 						}
 					}
@@ -217,11 +214,11 @@ func TestProductControllerUpdate(t *testing.T) {
 	}
 	testCases := []testCase{
 		{name: "valid", reqBody: sampleProducts[0], respBody: sampleProducts[0], status: http.StatusOK, err: nil},
-		{name: "empty product", reqBody: Product{}, respBody: Product{}, status: http.StatusBadRequest, err: errorMissingRequiredField},
-		{name: "missing product name", reqBody: Product{Name: "", RecipeID: "4"}, respBody: Product{}, status: http.StatusBadRequest, err: errorMissingRequiredField},
-		{name: "missing recipeID", reqBody: Product{Name: "product name", RecipeID: ""}, respBody: Product{}, status: http.StatusBadRequest, err: errorMissingRequiredField},
-		{name: "not a product", reqBody: "Not a product", respBody: Product{}, status: http.StatusBadRequest, err: errorMissingRequiredField},
-		{name: "not found", reqBody: Product{Name: "missing", RecipeID: "4"}, respBody: Product{}, status: http.StatusNoContent, err: notFoundError("missing")},
+		{name: "empty product", reqBody: Product{}, respBody: Product{}, status: http.StatusBadRequest, err: errorutils.ErrorMissingRequired},
+		{name: "missing product name", reqBody: Product{Name: "", RecipeID: "4"}, respBody: Product{}, status: http.StatusBadRequest, err: errorutils.ErrorMissingRequired},
+		{name: "missing recipeID", reqBody: Product{Name: "product name", RecipeID: ""}, respBody: Product{}, status: http.StatusBadRequest, err: errorutils.ErrorMissingRequired},
+		{name: "not a product", reqBody: "Not a product", respBody: Product{}, status: http.StatusBadRequest, err: errorutils.ErrorMissingRequired},
+		{name: "not found", reqBody: Product{Name: "missing", RecipeID: "4"}, respBody: Product{}, status: http.StatusNoContent, err: errorutils.NotFoundError("missing")},
 	}
 	t.Log("Given that I have the http server running")
 	{
@@ -241,10 +238,10 @@ func TestProductControllerUpdate(t *testing.T) {
 					t.Logf("Then I get %d status", test.status)
 					{
 						if recorder.Code == test.status {
-							passed(t)
+							testutils.Passed(t)
 
 						} else {
-							failed(t, recorder.Code)
+							testutils.Failed(t, recorder.Code)
 						}
 					}
 					t.Logf("And %v is returned", test.respBody)
@@ -252,17 +249,17 @@ func TestProductControllerUpdate(t *testing.T) {
 						responseData, _ := io.ReadAll(recorder.Body)
 
 						if test.err != nil && (string(responseData) == `""` || string(responseData) == "") {
-							passed(t)
+							testutils.Passed(t)
 						} else {
 							gotProduct := Product{}
 							err := json.Unmarshal(responseData, &gotProduct)
 							if err != nil {
-								failedToDeserialiseBody(t, recorder.Body)
+								testutils.FailedToDeserialise(t, recorder.Body)
 							}
 							if reflect.DeepEqual(gotProduct, test.reqBody) {
-								passed(t)
+								testutils.Passed(t)
 							} else {
-								failed(t, recorder.Body)
+								testutils.Failed(t, recorder.Body)
 							}
 						}
 					}
@@ -285,8 +282,8 @@ func TestProductControllerDelete(t *testing.T) {
 	testCases := []testCase{
 
 		{name: "product exists", reqId: strings.ToLower(sampleProducts[2].Name), respProduct: sampleProducts[2], status: http.StatusOK, err: nil},
-		{name: "product does not exist", reqId: "missing", respProduct: Product{}, status: http.StatusNoContent, err: notFoundError("missing")},
-		{name: "requested id is invalid", reqId: "a", respProduct: Product{}, status: http.StatusBadRequest, err: errorMissingID},
+		{name: "product does not exist", reqId: "missing", respProduct: Product{}, status: http.StatusNoContent, err: errorutils.NotFoundError("missing")},
+		{name: "requested id is invalid", reqId: "a", respProduct: Product{}, status: http.StatusBadRequest, err: errorutils.ErrorMissingID},
 	}
 	t.Log("Given that I want to delete a product")
 	{
@@ -305,27 +302,27 @@ func TestProductControllerDelete(t *testing.T) {
 					t.Logf("Then I get %d status", test.status)
 					{
 						if recorder.Code == test.status {
-							passed(t)
+							testutils.Passed(t)
 
 						} else {
-							failed(t, recorder.Code)
+							testutils.Failed(t, recorder.Code)
 						}
 					}
 					t.Logf("And %v is returned", test.respProduct)
 					{
 						responseData, _ := io.ReadAll(recorder.Body)
 						if (test.respProduct == Product{} && string(responseData) == `""` || len(responseData) == 0) {
-							passed(t)
+							testutils.Passed(t)
 						} else {
 							got := Product{}
 							err := json.Unmarshal(responseData, &got)
 							if err != nil {
-								failedToDeserialiseBody(t, recorder.Body)
+								testutils.FailedToDeserialise(t, recorder.Body)
 							}
 							if reflect.DeepEqual(got, test.respProduct) {
-								passed(t)
+								testutils.Passed(t)
 							} else {
-								failed(t, got)
+								testutils.Failed(t, got)
 							}
 						}
 					}
@@ -335,16 +332,4 @@ func TestProductControllerDelete(t *testing.T) {
 		}
 
 	}
-}
-
-func passed(t *testing.T) {
-	t.Log(myfmt.ThumbsUp)
-}
-
-func failed(t *testing.T, got any) {
-	t.Errorf("\n%s Got: %v", myfmt.ThumbsDown, got)
-}
-
-func failedToDeserialiseBody(t *testing.T, body any) {
-	t.Errorf("\n%s failed to deserialise the response: %v", myfmt.ThumbsDown, body)
 }

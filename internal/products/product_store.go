@@ -1,11 +1,10 @@
 package products
 
 import (
-	"fmt"
 	"strings"
-)
 
-const NotFound string = "product id: %s not found"
+	"github.com/judewood/bakery/errorutils"
+)
 
 // Product is a saleable food item
 type Product struct {
@@ -45,7 +44,7 @@ func (p *ProductStore) Get(id string) (Product, error) {
 			return v, nil
 		}
 	}
-	return Product{}, notFoundError(id)
+	return Product{}, errorutils.NotFoundError(id)
 }
 
 // Add adds given product to the store if it is a valid product
@@ -62,7 +61,7 @@ func (p *ProductStore) Update(product Product) (Product, error) {
 			return product, nil
 		}
 	}
-	return Product{}, notFoundError(product.Name)
+	return Product{}, errorutils.NotFoundError(product.Name)
 }
 
 // Delete deletes and returns matching product or empty product if not found
@@ -78,10 +77,5 @@ func (p *ProductStore) Delete(id string) (Product, error) {
 		}
 
 	}
-	return Product{}, notFoundError(id)
+	return Product{}, errorutils.NotFoundError(id)
 }
-
-func notFoundError(s string) error{
-	return fmt.Errorf(NotFound, s)
-}
-
