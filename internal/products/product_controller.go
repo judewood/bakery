@@ -40,18 +40,14 @@ func (p *ProductController) Get(ctx *gin.Context) {
 	product, err := p.productService.Get(id)
 
 	if err != nil {
-		slog.Debug("fff"+ err.Error())
 		if err.Error() == errorutils.MissingID {
-			slog.Debug("miss"+ err.Error())
 			ctx.JSON(http.StatusBadRequest, "")
 			return
 		}
 		if err.Error() == fmt.Sprintf(errorutils.NotFound, id) {
-			slog.Debug("notf" + err.Error())
 			ctx.JSON(http.StatusNoContent, "")
 			return
 		}
-		slog.Warn("oops" + err.Error())
 		ctx.JSON(http.StatusInternalServerError, "")
 		return
 	}
@@ -62,7 +58,7 @@ func (p *ProductController) Add(ctx *gin.Context) {
 	product := Product{}
 	err := ctx.BindJSON(&product)
 	if err != nil {
-		slog.Warn("invalid product add", "error", err)
+		slog.Warn("cannot deserialise to a product", "error", err)
 		ctx.JSON(http.StatusBadRequest, "")
 		return
 	}
@@ -83,7 +79,7 @@ func (p *ProductController) Update(ctx *gin.Context) {
 	product := Product{}
 	err := ctx.BindJSON(&product)
 	if err != nil {
-		slog.Warn("invalid product update", "error", err)
+		slog.Warn("cannot deserialise to a product", "error", err)
 		ctx.JSON(http.StatusBadRequest, "")
 		return
 	}
