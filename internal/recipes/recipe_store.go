@@ -13,6 +13,7 @@ type Ingredient struct {
 
 // Recipe is the ingredients and instructions for creating a product
 type Recipe struct {
+	Name        string       `json:"name"`
 	ID          string       `json:"id"`
 	Ingredients []Ingredient `json:"ingredients"`
 	BakeTime    int          `json:"bakeTime"`
@@ -21,7 +22,8 @@ type Recipe struct {
 // Recipes is in memory store of recipe for each product that the bakery sells
 var Recipes = map[string]Recipe{
 	"1": {
-		ID: "1", //"Vanilla cake"
+		Name: "Vanilla cake",
+		ID:   "1",
 		Ingredients: []Ingredient{
 			{Name: "flour", Quantity: 400},
 			{Name: "eggs", Quantity: 4},
@@ -30,7 +32,8 @@ var Recipes = map[string]Recipe{
 		BakeTime: 3,
 	},
 	"2": {
-		ID: "2", //"plain cookie"
+		Name: "plain cookie",
+		ID:   "2",
 		Ingredients: []Ingredient{
 			{Name: "flour", Quantity: 300},
 			{Name: "butter", Quantity: 200},
@@ -39,7 +42,8 @@ var Recipes = map[string]Recipe{
 		BakeTime: 1,
 	},
 	"3": {
-		ID: "3", //"Doughnut"
+		Name: "Doughnut",
+		ID:   "3",
 		Ingredients: []Ingredient{
 			{Name: "flour", Quantity: 500},
 			{Name: "sugar", Quantity: 300},
@@ -62,6 +66,7 @@ func (r *RecipeStore) GetRecipe(id string) (Recipe, error) {
 	if v, ok := Recipes[id]; ok {
 		return v, nil
 	}
-	slog.Debug("Recipe not found", "RecipeId", id )
+	slog.Debug("Recipe not found", "RecipeId", id)
 	return Recipe{}, fmt.Errorf("recipe Id: %v not found", id)
 }
+
