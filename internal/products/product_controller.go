@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/judewood/bakery/errorutils"
 )
 
 type ProductController struct {
@@ -39,14 +40,18 @@ func (p *ProductController) Get(ctx *gin.Context) {
 	product, err := p.productService.Get(id)
 
 	if err != nil {
-		if err.Error() == MissingID {
+		slog.Debug("fff"+ err.Error())
+		if err.Error() == errorutils.MissingID {
+			slog.Debug("miss"+ err.Error())
 			ctx.JSON(http.StatusBadRequest, "")
 			return
 		}
-		if err.Error() == fmt.Sprintf(NotFound, id) {
+		if err.Error() == fmt.Sprintf(errorutils.NotFound, id) {
+			slog.Debug("notf" + err.Error())
 			ctx.JSON(http.StatusNoContent, "")
 			return
 		}
+		slog.Warn("oops" + err.Error())
 		ctx.JSON(http.StatusInternalServerError, "")
 		return
 	}
@@ -64,7 +69,7 @@ func (p *ProductController) Add(ctx *gin.Context) {
 	slog.Debug("Add product request", "product", product)
 	added, err := p.productService.Add(product)
 	if err != nil {
-		if err.Error() == MissingRequired {
+		if err.Error() == errorutils.MissingRequired {
 			ctx.JSON(http.StatusBadRequest, "")
 			return
 		}
@@ -85,11 +90,11 @@ func (p *ProductController) Update(ctx *gin.Context) {
 	slog.Debug("Update product request", "product", product)
 	added, err := p.productService.Update(product)
 	if err != nil {
-		if err.Error() == MissingRequired {
+		if err.Error() == errorutils.MissingRequired {
 			ctx.JSON(http.StatusBadRequest, "")
 			return
 		}
-		if err.Error() == notFoundError(product.Name).Error() {
+		if err.Error() == errorutils.NotFoundError(product.Name).Error() {
 			ctx.JSON(http.StatusNoContent, "")
 			return
 		}
@@ -106,11 +111,11 @@ func (p *ProductController) Delete(ctx *gin.Context) {
 	product, err := p.productService.Delete(id)
 
 	if err != nil {
-		if err.Error() == MissingID {
+		if err.Error() == errorutils.MissingID {
 			ctx.JSON(http.StatusBadRequest, "")
 			return
 		}
-		if err.Error() == notFoundError(id).Error() {
+		if err.Error() == errorutils.NotFoundError(id).Error() {
 			ctx.JSON(http.StatusNoContent, "")
 			return
 		}

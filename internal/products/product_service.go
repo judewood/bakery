@@ -1,14 +1,12 @@
 package products
 
 import (
-	"errors"
 	"fmt"
 	"log/slog"
 	"strings"
-)
 
-const MissingRequired string = "missing required field"
-const MissingID = "missing id in request"
+	"github.com/judewood/bakery/errorutils"
+)
 
 // ProductServer provides a product service
 type ProductServer interface {
@@ -46,7 +44,7 @@ func (p *ProductService) GetAll() ([]Product, error) {
 func (p *ProductService) Get(id string) (Product, error) {
 	slog.Debug("Get product by id", "id", id)
 	if len(id) < 2 {
-		return Product{}, errors.New(MissingID)
+		return Product{}, errorutils.ErrorMissingID
 	}
 	return p.productStore.Get(id)
 }
@@ -77,7 +75,7 @@ func (p *ProductService) Update(product Product) (Product, error) {
 // Delete deletes an existing product
 func (p *ProductService) Delete(id string) (Product, error) {
 	if len(id) < 2 {
-		return Product{}, errors.New(MissingID)
+		return Product{}, errorutils.ErrorMissingID
 	}
 	return p.productStore.Delete(id)
 }
@@ -96,7 +94,7 @@ func FormatProducts(products []Product) string {
 // isInvalid returns whether this is a valid product and error if it is not valid
 func isInvalid(product Product) (bool, error) {
 	if product.Name == "" || product.RecipeID == "" {
-		return true, errors.New(MissingRequired)
+		return true, errorutils.ErrorMissingRequired
 	}
 	return false, nil
 }
