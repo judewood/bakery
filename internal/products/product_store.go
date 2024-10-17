@@ -14,9 +14,9 @@ type Product struct {
 
 // Persistent store of products - will move to AWS store
 var products = []Product{
-	{Name: "Vanilla cakes", RecipeID: "1"},
-	{Name: "Plain cookies", RecipeID: "2"},
-	{Name: "Doughnuts", RecipeID: "3"},
+	{Name: "Vanilla cakes", RecipeID: "cake_base"},
+	{Name: "Plain cookies", RecipeID: "cookie_base"},
+	{Name: "Doughnuts", RecipeID: "doughnut_base"},
 }
 
 // ProductStorer is something that can perform CRUD operations on products

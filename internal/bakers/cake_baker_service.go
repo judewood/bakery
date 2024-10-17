@@ -10,20 +10,20 @@ import (
 
 // CakeBaker bakes the cake using the recipe
 type CakeBaker struct {
-	recipeStore recipes.RecipeStorer
+	recipeCache recipes.RecipeCacher
 }
 
 // NewCakeBaker returns address of CakeBaker struct
-func NewCakeBaker(recipeStore recipes.RecipeStorer) *CakeBaker {
+func NewCakeBaker(recipeCache recipes.RecipeCacher) *CakeBaker {
 	return &CakeBaker{
-		recipeStore: recipeStore,
+		recipeCache: recipeCache,
 	}
 }
 
 // Bake will receive Cake products from the rawProducts channel.
 // It will Bake the products and then send the baked products onto a new channel for packaging
 func (cb *CakeBaker) Bake(rawProduct orders.ProductQuantity) error {
-	recipe, err := cb.recipeStore.GetRecipe(rawProduct.RecipeID)
+	recipe, err := cb.recipeCache.GetRecipe(rawProduct.RecipeID)
 	if err != nil {
 		return err
 	}

@@ -21,8 +21,8 @@ func TestBake(t *testing.T) {
 	}
 
 	sampleProductQuantity := []orders.ProductQuantity{
-		{ProductID: "Vanilla Cake", RecipeID: "1", Quantity: 1},
-		{ProductID: "plain cookie", RecipeID: "2", Quantity: 2},
+		{ProductID: "Vanilla Cake", RecipeID: "cake_base", Quantity: 1},
+		{ProductID: "plain cookie", RecipeID: "cookie_base", Quantity: 2},
 	}
 
 	type TestCase struct {
@@ -36,16 +36,16 @@ func TestBake(t *testing.T) {
 		{"found", sampleProductQuantity[0], sampleRecipe, nil},
 		{"missing", sampleProductQuantity[1], recipes.Recipe{}, errorutils.NotFoundError("missing")},
 	}
-	mockRecipeStore := recipes.NewMockRecipeStore()
+	mockRecipeCache := recipes.NewMockRecipeCache()
 	for i, test := range testCases {
 		tf := func(t *testing.T) {
 			t.Log("Given that I need to bake a product")
 			{
 				t.Logf("test %d: When the ingredients are %s", i, test.name)
 				{
-					mockRecipeStore.On("GetRecipe", test.input.RecipeID).Return(recipes.Recipe{}, test.err)
+					mockRecipeCache.On("GetRecipe", test.input.RecipeID).Return(recipes.Recipe{}, test.err)
 
-					cakeBaker := NewCakeBaker(mockRecipeStore)
+					cakeBaker := NewCakeBaker(mockRecipeCache)
 					gotError := cakeBaker.Bake(test.input)
 					if test.err == nil {
 						t.Log("Then Bake should return no error")
