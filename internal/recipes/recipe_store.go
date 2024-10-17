@@ -1,8 +1,10 @@
 package recipes
 
 import (
-	"fmt"
+	"encoding/json"
 	"log/slog"
+
+	"github.com/judewood/bakery/internal/s3client"
 )
 
 // Ingredient is a food ingredient for a product
@@ -19,54 +21,38 @@ type Recipe struct {
 	BakeTime    int          `json:"bakeTime"`
 }
 
-// Recipes is in memory store of recipe for each product that the bakery sells
-var Recipes = map[string]Recipe{
-	"1": {
-		Name: "Vanilla cake",
-		ID:   "1",
-		Ingredients: []Ingredient{
-			{Name: "flour", Quantity: 400},
-			{Name: "eggs", Quantity: 4},
-			{Name: "sugar", Quantity: 400},
-		},
-		BakeTime: 3,
-	},
-	"2": {
-		Name: "plain cookie",
-		ID:   "2",
-		Ingredients: []Ingredient{
-			{Name: "flour", Quantity: 300},
-			{Name: "butter", Quantity: 200},
-			{Name: "sugar", Quantity: 200},
-		},
-		BakeTime: 1,
-	},
-	"3": {
-		Name: "Doughnut",
-		ID:   "3",
-		Ingredients: []Ingredient{
-			{Name: "flour", Quantity: 500},
-			{Name: "sugar", Quantity: 300},
-		},
-		BakeTime: 2,
-	},
-}
-
 // RecipeStorer contains CRUD methods for recipes
 type RecipeStorer interface {
-	GetRecipe(id string) (Recipe, error)
+	GetRecipeFromS3(id string) (Recipe, error)
 }
 
 // RecipeStore implements crud operations on recipes
 type RecipeStore struct {
+	url string
+	s3  s3client.S3Communicator
 }
 
-// GetRecipe returns recipe with given if if it exists. Otherwise nil
-func (r *RecipeStore) GetRecipe(id string) (Recipe, error) {
-	if v, ok := Recipes[id]; ok {
-		return v, nil
+func New(url string, s3 s3client.S3Communicator) *RecipeStore {
+	slog.Info("S3 recipe folder", "folder", url)
+	return &RecipeStore{
+		url: url,
+		s3:  s3,
 	}
-	slog.Debug("Recipe not found", "RecipeId", id)
-	return Recipe{}, fmt.Errorf("recipe Id: %v not found", id)
 }
 
+func (r *RecipeStore) GetRecipeFromS3(id string) (Recipe, error) {
+	url := r.url + id + ".json"
+	slog.Debug("Getting S3 object from url", "url", url, "id", id)
+	response, err := r.s3.GetDataFromS3(url)
+	recipe := Recipe{}
+	if err != nil {
+		return Recipe{}, err
+	}
+	err = json.Unmarshal(response, &recipe)
+	if err != nil {
+		slog.Warn("failed to deserialise recipe form S3", "error", err)
+		return Recipe{}, err
+	}
+	slog.Debug("received recipe from S3", "recipe", recipe)
+	return recipe, nil
+}

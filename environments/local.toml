@@ -1,2 +1,5 @@
 [logs]
 level = "debug"
+
+[s3]
+recipesUrl = "https://judeco-bakery-recipes.s3.eu-north-1.amazonaws.com/recipes/"

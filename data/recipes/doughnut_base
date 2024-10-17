@@ -1,0 +1,19 @@
+{
+    "name": "doughnut",
+    "id": "doughnut_base",
+    "ingredients": [
+      {
+        "name": "flour",
+        "quantity": 500
+      },
+      {
+        "name": "sugar",
+        "quantity": 300
+      },
+      {
+        "name": "yeast",
+        "quantity": 1
+      }
+    ],
+    "bakeTime": 2
+}

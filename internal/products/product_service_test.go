@@ -10,9 +10,9 @@ import (
 )
 
 var sampleProducts = []Product{
-	{Name: "Vanilla cake", RecipeID: "1"},
-	{Name: "plain cookie", RecipeID: "2"},
-	{Name: "Doughnut", RecipeID: "3"},
+	{Name: "Vanilla cake", RecipeID: "cake_base"},
+	{Name: "plain cookie", RecipeID: "cookie_base"},
+	{Name: "Doughnut", RecipeID: "doughnut_base"},
 }
 
 func TestProductServiceGetAll(t *testing.T) {

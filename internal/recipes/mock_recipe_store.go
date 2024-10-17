@@ -14,8 +14,8 @@ func NewMockRecipeStore() *MockRecipeStore {
 	return &MockRecipeStore{}
 }
 
-func (m *MockRecipeStore) GetRecipe(id string) (Recipe, error) {
-	fmt.Printf("GetRecipe called with id: %v\n", id)
+func (m *MockRecipeStore) GetRecipeFromS3(id string) (Recipe, error) {
+	fmt.Printf("GetRecipeFromS3 called with id: %v\n", id)
 	args := m.Called(id)
 	return args.Get(0).(Recipe), args.Error(1)
 }

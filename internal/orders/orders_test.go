@@ -10,17 +10,17 @@ import (
 )
 
 var availableProducts = []products.Product{
-	{Name: "Vanilla cake", RecipeID: "1"},
-	{Name: "plain cookie", RecipeID: "2"},
-	{Name: "Doughnut", RecipeID: "3"},
+	{Name: "Vanilla cake", RecipeID: "cake_base"},
+	{Name: "plain cookie", RecipeID: "cookie_base"},
+	{Name: "Doughnut", RecipeID: "doughnut_base"},
 }
 
 func TestRandomOrder(t *testing.T) {
 
 	wantedItems := []ProductQuantity{
-		{ProductID: "Vanilla cake", RecipeID: "1", Quantity: 3},
-		{ProductID: "plain cookie", RecipeID: "2", Quantity: 3},
-		{ProductID: "Doughnut", RecipeID: "3", Quantity: 3},
+		{ProductID: "Vanilla cake", RecipeID: "cake_base", Quantity: 3},
+		{ProductID: "plain cookie", RecipeID: "cookie_base", Quantity: 3},
+		{ProductID: "Doughnut", RecipeID: "doughnut_base", Quantity: 3},
 	}
 
 	type testCase struct {
@@ -80,7 +80,7 @@ func TestFormatOrder(t *testing.T) {
 		t.Log("When the order is formatted")
 		{
 			got := order.FormatOrder()
-			t.Logf("The formatted order should be :%s", want )
+			t.Logf("The formatted order should be :%s", want)
 			{
 				if got == want {
 					testutils.Passed(t)

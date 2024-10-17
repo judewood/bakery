@@ -1,0 +1,19 @@
+{
+  "name": "cookie",
+  "id": "cookie_base",
+  "ingredients": [
+    {
+      "name": "flour",
+      "quantity": 300
+    },
+    {
+      "name": "butter",
+      "quantity": 200
+    },
+    {
+      "name": "sugar",
+      "quantity": 200
+    }
+  ],
+  "bakeTime": 1
+}
