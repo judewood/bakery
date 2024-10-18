@@ -5,7 +5,7 @@ import (
 	"log/slog"
 	"strings"
 
-	"github.com/judewood/bakery/errorutils"
+	"github.com/judewood/bakery/utils/errorutils"
 )
 
 // ProductServer provides a product service

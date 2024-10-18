@@ -3,10 +3,10 @@ package bakers
 import (
 	"testing"
 
-	"github.com/judewood/bakery/errorutils"
 	"github.com/judewood/bakery/internal/orders"
 	"github.com/judewood/bakery/internal/recipes"
-	"github.com/judewood/bakery/testutils"
+	"github.com/judewood/bakery/utils/errorutils"
+	"github.com/judewood/bakery/utils/testutils"
 )
 
 func TestBake(t *testing.T) {

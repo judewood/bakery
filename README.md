@@ -10,11 +10,25 @@ Comprised of two applications
 
 2. Game app that will be the back end for a game where players can fulfil orders to gain points
 
+## Prerequisites
+
+You need to have the C compiler "gcc" installed. This enables some additional build options eg race condition detection (-race) otherwise you will see an error similar to `cgo: C compiler "gcc" not found: exec: "gcc": executable file not found in %PATH%`
+
+Go to [this link](https://jmeubank.github.io/tdm-gcc/download/) and install the 64+32-bit MinGW-w64 edition.
+
+
 ## Build
 
 1. Build api: `go build ./cmd/api`
 
-2. Build game: `go build ./cmd/game`
+2. Build game: `go build -race ./cmd/game`
+
+### Detect Race Conditions
+
+ [A data race occurs when two goroutines access the same variable concurrently and at least one of the accesses is a write](https://go.dev/doc/articles/race_detector)
+
+Production builds should use the -race option to detect potential race conditions at compile time. The game application uses goroutines so the race detection option (-race) is included in the build command above
+
 
 ## Running the code locally
 

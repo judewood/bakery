@@ -11,9 +11,9 @@ import (
 	"testing"
 
 	"github.com/gin-gonic/gin"
-	"github.com/judewood/bakery/errorutils"
 	"github.com/judewood/bakery/internal/router"
-	"github.com/judewood/bakery/testutils"
+	"github.com/judewood/bakery/utils/errorutils"
+	"github.com/judewood/bakery/utils/testutils"
 )
 
 var recorder *httptest.ResponseRecorder

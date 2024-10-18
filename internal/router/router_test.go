@@ -6,7 +6,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/judewood/bakery/testutils"
+	"github.com/judewood/bakery/utils/testutils"
 )
 
 func TestPingRoute(t *testing.T) {
@@ -31,10 +31,10 @@ func TestPingRoute(t *testing.T) {
 				{
 					respBytes, err := io.ReadAll(w.Body)
 					if err != nil {
-						testutils.FailedToReadResponse(t,err)
+						testutils.FailedToReadResponse(t, err)
 					}
 					if string(respBytes) != "pong" {
-						testutils.Failed(t,string(respBytes))
+						testutils.Failed(t, string(respBytes))
 					}
 				}
 			}
