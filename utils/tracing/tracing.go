@@ -1,4 +1,4 @@
-package utils
+package tracing
 
 import (
 	"fmt"
@@ -7,22 +7,7 @@ import (
 	"runtime/trace"
 )
 
-/*
-This package allows you to trace part of the code and view the 
-execution path then the code run completes
-
-To trace eg a function add at the top of the function 
-	f := utils.StartTrace()
-	defer utils.StopTrace(f)
-
-
-
-When the program completes a trace.out file will be created
-To view this file run the following in the command line
- go tool trace trace.out
-*/
-
-// starts the execution trace
+// StartTrace starts the execution trace
 func StartTrace() *os.File {
 	// Create a file to store the trace output
 	f, err := os.Create("trace.out")
@@ -38,7 +23,7 @@ func StartTrace() *os.File {
 	return f
 }
 
-// closes the trace File and stops the execution trace
+// StopTrace closes the trace File and stops the execution trace
 func StopTrace(f *os.File) {
 	trace.Stop()
 	f.Close()

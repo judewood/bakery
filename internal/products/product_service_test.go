@@ -5,8 +5,8 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/judewood/bakery/errorutils"
-	"github.com/judewood/bakery/testutils"
+	"github.com/judewood/bakery/utils/errorutils"
+	"github.com/judewood/bakery/utils/testutils"
 )
 
 var sampleProducts = []Product{

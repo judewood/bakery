@@ -6,7 +6,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/judewood/bakery/errorutils"
+	"github.com/judewood/bakery/utils/errorutils"
 )
 
 type ProductController struct {

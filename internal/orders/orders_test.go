@@ -6,7 +6,7 @@ import (
 
 	"github.com/judewood/bakery/internal/products"
 	"github.com/judewood/bakery/random"
-	"github.com/judewood/bakery/testutils"
+	"github.com/judewood/bakery/utils/testutils"
 )
 
 var availableProducts = []products.Product{

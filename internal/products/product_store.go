@@ -3,7 +3,7 @@ package products
 import (
 	"strings"
 
-	"github.com/judewood/bakery/errorutils"
+	"github.com/judewood/bakery/utils/errorutils"
 )
 
 // Product is a saleable food item
