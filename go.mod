@@ -4,11 +4,7 @@ go 1.22.1
 
 require github.com/stretchr/testify v1.9.0
 
-require (
-	github.com/aws/aws-sdk-go v1.55.5 // indirect
-	github.com/fsnotify/fsnotify v1.7.0 // indirect
-	github.com/jmespath/go-jmespath v0.4.0 // indirect
-)
+require github.com/fsnotify/fsnotify v1.7.0 // indirect
 
 require (
 	github.com/bytedance/sonic v1.11.6 // indirect
