@@ -31,8 +31,3 @@ func (cb *CakeBaker) Bake(rawProduct orders.ProductQuantity) error {
 	time.Sleep(time.Duration(recipe.BakeTime) * time.Second)
 	return nil
 }
-
-// Package - still to be implemented
-func (cb *CakeBaker) Package() {
-	slog.Debug("Order packaged and ready to go")
-}

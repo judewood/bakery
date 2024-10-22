@@ -28,14 +28,15 @@ func main() {
 
 	bakerService := bakers.NewCakeBaker(recipeCache)
 
-	order, err := orders.NewOrder(productStore, random).RandomOrder()
+	order, err := orders.NewOrder(productStore, random, orders.WithCustomerCollect(true))
 	if err != nil {
 		log.Fatal(err)
 	}
+	order.CreateOrder()
 
 	fmt.Print(order.FormatOrder())
 
-	ch := make(chan orders.ProductQuantity)
+	ch := make(chan orders.ProductQuantity, len(order.Items))
 	go func() {
 		for _, v := range order.Items {
 			ch <- v
@@ -49,5 +50,6 @@ func main() {
 			fmt.Println(err.Error())
 		}
 	}
-	bakerService.Package()
+
+	order.Ready()
 }
