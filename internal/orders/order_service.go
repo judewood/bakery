@@ -43,7 +43,6 @@ func NewOrder(productStorer products.ProductStorer, random random.RandomProvider
 
 		err := opt(&options)
 		if err != nil {
-			fmt.Println("TODO")
 			return nil, err
 		}
 	}
@@ -58,7 +57,6 @@ func NewOrder(productStorer products.ProductStorer, random random.RandomProvider
 func (o *Order) CreateOrder() error {
 	items, err := o.GetRandomItems()
 	if err != nil {
-		fmt.Println("TODO")
 		return err
 	}
 	o.Items = items

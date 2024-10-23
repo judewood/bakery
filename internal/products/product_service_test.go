@@ -81,7 +81,7 @@ func TestProductServiceGet(t *testing.T) {
 	}
 
 	testCases := []testCase{
-		{name: "missing", input: "invalid", want: Product{}, err: errorutils.NotFoundError("missing")},
+		{name: "missing", input: "invalid", want: Product{}, err: errorutils.ErrorNotFound},
 		{name: "invalid id", input: "x", want: Product{}, err: errorutils.ErrorMissingID},
 		{name: "valid", input: "Vanilla cake", want: sampleProducts[0], err: nil},
 	}
@@ -211,7 +211,7 @@ func TestProductServiceUpdate(t *testing.T) {
 		{name: "empty", input: Product{}, want: Product{}, err: mockError},
 		{name: "missing recipe id", input: Product{Name: "productName", RecipeID: ""}, want: Product{}, err: mockError},
 		{name: "missing product name", input: Product{Name: "", RecipeID: "RecipeId"}, want: Product{}, err: mockError},
-		{name: "missing", input: updatedProduct, want: Product{}, err: errorutils.NotFoundError("missing")},
+		{name: "missing", input: updatedProduct, want: Product{}, err: errorutils.ErrorNotFound},
 		{name: "valid", input: updatedProduct, want: updatedProduct, err: nil},
 	}
 
@@ -271,7 +271,7 @@ func TestProductServiceDelete(t *testing.T) {
 	}
 
 	testCases := []testCase{
-		{name: "does not exist", input: "missing", want: Product{}, err: errorutils.NotFoundError("missing")},
+		{name: "does not exist", input: "missing", want: Product{}, err: errorutils.ErrorNotFound},
 		{name: "invalid id", input: "x", want: Product{}, err: errorutils.ErrorMissingID},
 		{name: "exists", input: "Vanilla cake", want: sampleProducts[0], err: nil},
 	}

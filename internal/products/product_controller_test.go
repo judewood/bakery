@@ -88,7 +88,7 @@ func TestProductControllerGet(t *testing.T) {
 	}
 	testCases := []testCase{
 		{name: "product exists", reqId: strings.ToLower(sampleProducts[2].Name), respProduct: sampleProducts[2], status: http.StatusOK, err: nil},
-		{name: "product does not exist", reqId: "missing", respProduct: Product{}, status: http.StatusNoContent, err: errorutils.NotFoundError("missing")},
+		{name: "product does not exist", reqId: "missing", respProduct: Product{}, status: http.StatusNoContent, err: errorutils.ErrorNotFound},
 		{name: "requested id is invalid", reqId: "a", respProduct: Product{}, status: http.StatusBadRequest, err: errorutils.ErrorMissingID},
 	}
 	t.Log("Given that I have the http server running")
@@ -218,7 +218,7 @@ func TestProductControllerUpdate(t *testing.T) {
 		{name: "missing product name", reqBody: Product{Name: "", RecipeID: "4"}, respBody: Product{}, status: http.StatusBadRequest, err: errorutils.ErrorMissingRequired},
 		{name: "missing recipeID", reqBody: Product{Name: "product name", RecipeID: ""}, respBody: Product{}, status: http.StatusBadRequest, err: errorutils.ErrorMissingRequired},
 		{name: "not a product", reqBody: "Not a product", respBody: Product{}, status: http.StatusBadRequest, err: errorutils.ErrorMissingRequired},
-		{name: "not found", reqBody: Product{Name: "missing", RecipeID: "4"}, respBody: Product{}, status: http.StatusNoContent, err: errorutils.NotFoundError("missing")},
+		{name: "not found", reqBody: Product{Name: "missing", RecipeID: "4"}, respBody: Product{}, status: http.StatusNoContent, err: errorutils.ErrorNotFound},
 	}
 	t.Log("Given that I have the http server running")
 	{
@@ -282,7 +282,7 @@ func TestProductControllerDelete(t *testing.T) {
 	testCases := []testCase{
 
 		{name: "product exists", reqId: strings.ToLower(sampleProducts[2].Name), respProduct: sampleProducts[2], status: http.StatusOK, err: nil},
-		{name: "product does not exist", reqId: "missing", respProduct: Product{}, status: http.StatusNoContent, err: errorutils.NotFoundError("missing")},
+		{name: "product does not exist", reqId: "missing", respProduct: Product{}, status: http.StatusNoContent, err: errorutils.ErrorNotFound},
 		{name: "requested id is invalid", reqId: "a", respProduct: Product{}, status: http.StatusBadRequest, err: errorutils.ErrorMissingID},
 	}
 	t.Log("Given that I want to delete a product")

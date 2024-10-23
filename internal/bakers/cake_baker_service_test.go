@@ -34,7 +34,7 @@ func TestBake(t *testing.T) {
 
 	testCases := []TestCase{
 		{"found", sampleProductQuantity[0], sampleRecipe, nil},
-		{"missing", sampleProductQuantity[1], recipes.Recipe{}, errorutils.NotFoundError("missing")},
+		{"missing", sampleProductQuantity[1], recipes.Recipe{}, errorutils.ErrorNotFound},
 	}
 	mockRecipeCache := recipes.NewMockRecipeCache()
 	for i, test := range testCases {
