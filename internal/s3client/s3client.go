@@ -25,8 +25,11 @@ func (s *S3Client) GetDataFromS3(url string) ([]byte, error) {
 		Timeout: time.Second * 10,
 	}
 	response, err := client.Get(url)
-	if err != nil || response == nil {
-		slog.Warn("failed to get response from S3", "error", err)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get response from S3 url : %s. Error: %w", url, err)
+	}
+	if response == nil {
+		return nil, fmt.Errorf("failed to get response from S3 url : %s", url)
 	}
 	slog.Debug("Status code from S3 request", "code", response.StatusCode)
 	switch response.StatusCode {

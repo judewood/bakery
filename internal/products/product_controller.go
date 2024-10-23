@@ -1,7 +1,7 @@
 package products
 
 import (
-	"fmt"
+	"errors"
 	"log/slog"
 	"net/http"
 
@@ -40,11 +40,11 @@ func (p *ProductController) Get(ctx *gin.Context) {
 	product, err := p.productService.Get(id)
 
 	if err != nil {
-		if err.Error() == errorutils.MissingID {
+		if errors.Is(err, errorutils.ErrorMissingID) {
 			ctx.JSON(http.StatusBadRequest, "")
 			return
 		}
-		if err.Error() == fmt.Sprintf(errorutils.NotFound, id) {
+		if errors.Is(err, errorutils.ErrorNotFound) {
 			ctx.JSON(http.StatusNoContent, "")
 			return
 		}
@@ -65,7 +65,7 @@ func (p *ProductController) Add(ctx *gin.Context) {
 	slog.Debug("Add product request", "product", product)
 	added, err := p.productService.Add(product)
 	if err != nil {
-		if err.Error() == errorutils.MissingRequired {
+		if errors.Is(err, errorutils.ErrorMissingRequired) {
 			ctx.JSON(http.StatusBadRequest, "")
 			return
 		}
@@ -86,11 +86,11 @@ func (p *ProductController) Update(ctx *gin.Context) {
 	slog.Debug("Update product request", "product", product)
 	added, err := p.productService.Update(product)
 	if err != nil {
-		if err.Error() == errorutils.MissingRequired {
+		if errors.Is(err, errorutils.ErrorMissingRequired) {
 			ctx.JSON(http.StatusBadRequest, "")
 			return
 		}
-		if err.Error() == errorutils.NotFoundError(product.Name).Error() {
+		if errors.Is(err, errorutils.ErrorNotFound) {
 			ctx.JSON(http.StatusNoContent, "")
 			return
 		}
@@ -105,13 +105,12 @@ func (p *ProductController) Delete(ctx *gin.Context) {
 	slog.Debug("Delete by id request", "id", id)
 
 	product, err := p.productService.Delete(id)
-
 	if err != nil {
-		if err.Error() == errorutils.MissingID {
+		if errors.Is(err, errorutils.ErrorMissingID) {
 			ctx.JSON(http.StatusBadRequest, "")
 			return
 		}
-		if err.Error() == errorutils.NotFoundError(id).Error() {
+		if errors.Is(err, errorutils.ErrorNotFound) {
 			ctx.JSON(http.StatusNoContent, "")
 			return
 		}

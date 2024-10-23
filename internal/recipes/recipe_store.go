@@ -2,6 +2,7 @@ package recipes
 
 import (
 	"encoding/json"
+	"fmt"
 	"log/slog"
 
 	"github.com/judewood/bakery/internal/s3client"
@@ -50,8 +51,7 @@ func (r *RecipeStore) GetRecipeFromS3(id string) (Recipe, error) {
 	}
 	err = json.Unmarshal(response, &recipe)
 	if err != nil {
-		slog.Warn("failed to deserialise recipe form S3", "error", err)
-		return Recipe{}, err
+		return Recipe{}, fmt.Errorf("failed to deserialise recipe from S3: %w", err)
 	}
 	slog.Debug("received recipe from S3", "recipe", recipe)
 	return recipe, nil

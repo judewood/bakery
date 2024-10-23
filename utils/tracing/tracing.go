@@ -2,7 +2,7 @@ package tracing
 
 import (
 	"fmt"
-	"log"
+	"log/slog"
 	"os"
 	"runtime/trace"
 )
@@ -12,12 +12,12 @@ func StartTrace() *os.File {
 	// Create a file to store the trace output
 	f, err := os.Create("trace.out")
 	if err != nil {
-		log.Fatalf("failed to create trace output file: %v", err)
+		slog.Warn("failed to create trace output file: %v", "error", err)
 	}
 
 	// Start the trace
 	if err := trace.Start(f); err != nil {
-		log.Fatalf("failed to start trace: %v", err)
+		slog.Warn("failed to start trace: %v", "error", err)
 	}
 	fmt.Println("Tracing started")
 	return f

@@ -25,7 +25,7 @@ func FailedToDeserialise(t *testing.T, body any) {
 	t.Errorf("\n%s testutils.Failed to deserialise the response: %v", ThumbsDown, body)
 }
 
-// FailedToDeserialise prints a yellow thumbs down emoji followed by 
+// FailedToDeserialise returns prefixed with a yellow thumbs down emoji followed by 
 // the fail reason and the given input stream that could not be read
 // and prints it to the test output for improved readability
 func FailedToReadResponse(t *testing.T, err error) {
