@@ -1,0 +1,36 @@
+Resources:
+  BakeryBucket:
+    Type: "AWS::S3::Bucket"
+    Properties:
+      BucketName: judeco-bakery-bucket
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: false
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+  BakeryBucketPolicy:
+    Type: "AWS::S3::BucketPolicy"
+    Properties:
+      Bucket:
+        Ref: "BakeryBucket"
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal: "*"
+            Action: "s3:GetObject"
+            Resource:
+              Fn::Join:
+                - ""
+                - - "arn:aws:s3:::"
+                  - Ref: "BakeryBucket"
+                  - "/*"
+          - Effect: Allow
+            Principal: "*"
+            Action: "s3:GetObject"
+            Resource:
+              Fn::Join:
+                - ""
+                - - "arn:aws:s3:::"
+                  - Ref: "BakeryBucket"
+                  - "/*"
