@@ -2,7 +2,7 @@ Resources:
   BakeryBucket:
     Type: "AWS::S3::Bucket"
     Properties:
-      BucketName: judeco-bakery-bucket
+      BucketName: judeco-bakery-bucket-prod
       PublicAccessBlockConfiguration:
         BlockPublicAcls: true
         BlockPublicPolicy: false
@@ -28,6 +28,16 @@ Resources:
           - Effect: Allow
             Principal: "*"
             Action: "s3:GetObject"
+            Resource:
+              Fn::Join:
+                - ""
+                - - "arn:aws:s3:::"
+                  - Ref: "BakeryBucket"
+                  - "/*"
+          - Effect: Allow
+            Principal:
+              AWS: "myuserarn"
+            Action: "s3:*"
             Resource:
               Fn::Join:
                 - ""
