@@ -2,4 +2,4 @@
 level = "info"
 
 [s3]
-recipesUrl = "https://judeco-bakery-recipes.s3.eu-north-1.amazonaws.com/recipes/"
+recipesUrl = "https://judeco-bakery-bucket-prod.s3.eu-west-2.amazonaws.com/recipes/"
